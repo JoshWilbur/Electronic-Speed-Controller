@@ -1,2 +1,2 @@
 # Electronic-Speed-Controller
-testing
+Developers: Amir Seidakhmetov and Joshua Wilbur
