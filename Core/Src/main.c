@@ -1,11 +1,18 @@
 #include "main.h"
 
+/* TO DO:
+ * Generate PWM
+ * User input program (read pot. with ADC)
+ * Hall Effect sensor feedback
+ */
+
+EXTI_HandleTypeDef htim2;
+
 int main(void)
 {
   HAL_Init();
   SystemClock_Config();
   MX_GPIO_Init();
-  //LED_test(200);
   while(1){
 	  HBridge_Forward();
 	  HAL_Delay(1000);
