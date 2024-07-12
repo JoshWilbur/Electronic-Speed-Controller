@@ -70,25 +70,14 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  // CCR register from 0 to 65535
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
-  int LED_dim;
   while (1)
   {
     /* USER CODE END WHILE */
-	  LED_dim = 0;
-      while(LED_dim < 65535)
-      {
-    	  TIM3->CCR1 = LED_dim;
-    	  TIM3->CCR2 = LED_dim;
-    	  TIM3->CCR3 = LED_dim;
-    	  TIM3->CCR4 = LED_dim;
-    	  LED_dim += 50;
-    	  HAL_Delay(1);
-      }
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -162,7 +151,7 @@ static void MX_TIM3_Init(void)
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim3.Init.Period = 65535;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
   {
     Error_Handler();
