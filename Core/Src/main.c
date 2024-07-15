@@ -86,7 +86,7 @@ int main(void)
     	  TIM3->CCR2 = LED_dim;
     	  TIM3->CCR3 = LED_dim;
     	  TIM3->CCR4 = LED_dim;
-    	  LED_dim += 50;
+    	  LED_dim += 60;
     	  HAL_Delay(1);
       }
     /* USER CODE BEGIN 3 */
