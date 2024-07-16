@@ -5,6 +5,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "H_bridge.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -30,8 +31,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
-void HBridge_Forward(void);
-void HBridge_Backward(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -70,14 +69,22 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  // CCR register from 0 to 65535
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
+  int LED_dim;
   while (1)
   {
+	  LED_dim = 0;
+      while(LED_dim < 65535)
+      {
+    	  HBridge_State(LED_dim, 0, 19999, 20000, 65535);
+    	  LED_dim += 30;
+    	  HAL_Delay(1);
+      }
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -151,7 +158,7 @@ static void MX_TIM3_Init(void)
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim3.Init.Period = 65535;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
   {
     Error_Handler();
@@ -231,14 +238,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-// Toggle switches "1" and "4" to allow forward motor rotation
-void HBridge_Forward(void){
-}
-
-
-// Toggle switches "2" and "3" to allow backward motor rotation
-void HBridge_Backward(void){
-}
 
 /* USER CODE END 4 */
 
