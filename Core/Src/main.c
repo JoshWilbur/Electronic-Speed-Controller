@@ -82,6 +82,7 @@ int main(void)
   while (1)
   {
 	  LED_dim = 0;
+	  // Test H-Bridge state program with LED's to represent transistors
       while(LED_dim < 65535)
       {
     	  HBridge_State(LED_dim, 0, 19999, 20000, 65535);
