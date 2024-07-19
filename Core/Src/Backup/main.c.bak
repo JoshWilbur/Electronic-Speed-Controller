@@ -22,6 +22,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
+
 TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
@@ -81,11 +82,11 @@ int main(void)
   while (1)
   {
 	  LED_dim = 0;
-	  // Test H-Bridge state program with LED's to represent transistors
+	  // Test H-Bridge state program with LED's to represent transistors (picture in GitHub)
       while(LED_dim < 65535)
       {
      	  HBridge_State(LED_dim, 0, 19999, 20000, 65535);
-    	  LED_dim = User_Input();
+    	  LED_dim = User_Input(); // Obtain input from potentiometer
     	  HAL_Delay(1);
       }
     /* USER CODE END WHILE */
@@ -167,7 +168,7 @@ static void MX_ADC1_Init(void)
   hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   hadc1.Init.LowPowerAutoWait = DISABLE;
-  hadc1.Init.ContinuousConvMode = ENABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
   hadc1.Init.NbrOfConversion = 1;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
