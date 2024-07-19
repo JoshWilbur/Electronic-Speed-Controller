@@ -82,11 +82,11 @@ int main(void)
   while (1)
   {
 	  LED_dim = 0;
-	  // Test H-Bridge state program with LED's to represent transistors
+	  // Test H-Bridge state program with LED's to represent transistors (picture in GitHub)
       while(LED_dim < 65535)
       {
-    	  HBridge_State(LED_dim, 0, 19999, 20000, 65535);
-    	  LED_dim += 30;
+     	  HBridge_State(LED_dim, 0, 19999, 20000, 65535);
+    	  LED_dim = User_Input(); // Obtain input from potentiometer
     	  HAL_Delay(1);
       }
     /* USER CODE END WHILE */
