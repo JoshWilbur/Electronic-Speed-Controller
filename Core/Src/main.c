@@ -85,7 +85,7 @@ int main(void)
 	  // Test H-Bridge state program with LED's to represent transistors (picture in GitHub)
       while(LED_dim < 65535)
       {
-     	  HBridge_State(LED_dim, 0, 699, 700, 2850);
+     	  HBridge_State(LED_dim, 0, 569, 570, 2850);
     	  LED_dim = User_Input(); // Obtain input from potentiometer
     	  HAL_Delay(1);
       }
