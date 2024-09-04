@@ -1,10 +1,6 @@
 // This file contains functions which govern the behavior of the H bridge circuit
 #include "main.h"
 
-/* TO DO LIST:
- * Look into making the input an interrupt
- */
-
 // Function prototypes
 void HBridge_State(int input, int Backward_LB, int Backward_UB, int Forward_LB, int Forward_UB);
 int User_Input(void);
@@ -12,15 +8,15 @@ int User_Input(void);
 // This function uses input from the potentiometer to determine the H-Bridge circuit state
 // The input ranges from 0 to 2850
 void HBridge_State(int input, int Backward_LB, int Backward_UB, int Forward_LB, int Forward_UB){
-	// Within the "counterclockwise/backward" rotation region, switch transistors 1 and 4
+	// Within the "counterclockwise/backward" rotation region, switch transistors 1 and 4 on
 	if(input >= Backward_LB && input <= Backward_UB){
 		TIM3->CCR1 = Forward_LB - input;
 		TIM3->CCR2 = 0;
-		TIM3->CCR3 				= 0;
+		TIM3->CCR3 = 0;
 		TIM3->CCR4 = Forward_LB - input;
 	}
 
-	// Within the "clockwise/forward" rotation region, switch transistors 2 and 3
+	// Within the "clockwise/forward" rotation region, switch transistors 2 and 3 on
 	if(input >= Forward_LB && input <= Forward_UB){
 		TIM3->CCR1 = 0;
 		TIM3->CCR2 = input - Forward_LB;
