@@ -2,12 +2,12 @@
 #include "main.h"
 
 // Function prototypes
-void HBridge_State(int input, int Backward_LB, int Backward_UB, int Forward_LB, int Forward_UB);
-int User_Input(void);
+void hbridge_state(int input, int Backward_LB, int Backward_UB, int Forward_LB, int Forward_UB);
+int user_input(void);
 
 // This function uses input from the potentiometer to determine the H-Bridge circuit state
 // The input ranges from 0 to 2850
-void HBridge_State(int input, int Backward_LB, int Backward_UB, int Forward_LB, int Forward_UB){
+void hbridge_state(int input, int Backward_LB, int Backward_UB, int Forward_LB, int Forward_UB){
 	// Within the "counterclockwise/backward" rotation region, switch transistors 1 and 4 on
 	if(input >= Backward_LB && input <= Backward_UB){
 		TIM3->CCR1 = Forward_LB - input;
@@ -26,7 +26,7 @@ void HBridge_State(int input, int Backward_LB, int Backward_UB, int Forward_LB, 
 }
 
 // This function takes an input from the potentiometer connected to ADC1_CH1
-int User_Input(void){
+int user_input(void){
 	int input_adc = 0;
 	HAL_ADC_Start(&hadc1); // Begin ADC conversion
  	HAL_ADC_PollForConversion(&hadc1, 100);
