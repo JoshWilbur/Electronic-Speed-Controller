@@ -5,3 +5,4 @@
 // https://deepbluembedded.com/stm32-external-interrupt-example-lab/
 
 // Interrupts will be needed for this to reduce latency and get accurate results
+

@@ -28,10 +28,9 @@ void hbridge_state(int input, int Backward_LB, int Backward_UB, int Forward_LB, 
 // This function takes an input from the potentiometer connected to ADC1_CH1
 int user_input(void){
 	int input_adc = 0;
-	int scale_factor = 0.71;
 	HAL_ADC_Start(&hadc1); // Begin ADC conversion
  	HAL_ADC_PollForConversion(&hadc1, 100);
 	input_adc = HAL_ADC_GetValue(&hadc1); // Obtain raw ADC output
 	HAL_ADC_Stop(&hadc1); // End ADC conversion
-	return input_adc*scale_factor; // Return ADC value times a scaling factor, more details in notebook
+	return input_adc*0.71; // Return ADC value times a scaling factor, more details in notebook
 }
