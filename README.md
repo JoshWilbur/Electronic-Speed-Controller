@@ -11,8 +11,6 @@ Image of prototype to test STM32 output (7/19/24)
 # Software TODO
 * Raise PWM voltage to greater than 3V. Currently it is ~2.5V at 100% duty 
   cycle, this is close to the minimum IR2011 V_IL <= 2.2V.
-* Add team names to files we authored
 * Look into making the potentiometer input an interrupt (see main.c 82)
-* Start building feedback program, need to set up another ADC for that.
 * Research programming the STM32L476RG without a dev board.
 * Wireless controller (if time avails).

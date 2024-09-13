@@ -4,4 +4,20 @@
 // This link along with ECE271 notes was used to help with setup:
 // https://deepbluembedded.com/stm32-external-interrupt-example-lab/
 
-// Interrupts will be needed for this to reduce latency and get accurate results
+// Global variables
+volatile int num_pulses = 0; // Volatile so compiler doesn't incorrectly optimize it, want to read newest val at all times
+int openings = 6; // We intend for 6 openings in the disk, this will produce 6 pulses per revolution
+
+// EXTI callback for pulse counting
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+    if (GPIO_Pin == GPIO_PIN_1){ // Confirm PC1 is the interrupt pin
+    	num_pulses++;
+    }
+}
+
+void HAL_TIM2_Period_Callback(TIM_HandleTypeDef *htim){
+	if (htim->Instance == TIM2){ // Confirm htim2 is the interrupt clock
+		int rpm = (num_pulses / openings) / 60;
+		num_pulses = 0;
+	}
+}
