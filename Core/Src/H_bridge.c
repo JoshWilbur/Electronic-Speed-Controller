@@ -4,6 +4,11 @@
 // Function prototypes
 void hbridge_state(int input, int Backward_LB, int Backward_UB, int Forward_LB, int Forward_UB);
 int user_input(void);
+void PWM_frequency(int freq);
+
+
+// TODO NEXT TIME: recalculate ARR and PSC
+
 
 // This function uses input from the potentiometer to determine the H-Bridge circuit state
 // The input ranges from 0 to 2850
@@ -32,5 +37,18 @@ int user_input(void){
  	HAL_ADC_PollForConversion(&hadc1, 100);
 	input_adc = HAL_ADC_GetValue(&hadc1); // Obtain raw ADC output
 	HAL_ADC_Stop(&hadc1); // End ADC conversion
-	return input_adc*0.71; // Return ADC value times a scaling factor, more details in notebook
+	return input_adc*0.037; // Return ADC value times a scaling factor, more details in notebook
+}
+
+// This function can modify the TIM2 PWM frequency (range: 100Hz to 50kHz) with ease
+// See 9/16/24 notebook entry for more details
+void PWM_frequency(int freq){
+	int psc = 0;
+	TIM3->ARR = 149; // ARR is kept constant
+	if(freq >= 100 && freq <= 50000){
+		psc = (480000 / freq) - 1;
+		TIM3->PSC = psc;
+	}
+	TIM3->EGR |= TIM_EGR_UG; // Update TIM3 with new values
+
 }

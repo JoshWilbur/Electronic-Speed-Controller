@@ -11,14 +11,14 @@ int disc_openings = 6;
 
 // EXTI callback for pulse counting
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-    if (GPIO_Pin == GPIO_PIN_1){ // Confirm PC1 is the interrupt pin
+    if(GPIO_Pin == GPIO_PIN_1){ // Confirm PC1 is the interrupt pin
     	num_pulses++;
     }
 }
 
 // TIM2 callback for triggering interrupt to calculate pulses
 void HAL_TIM2_Period_Callback(TIM_HandleTypeDef *htim){
-	if (htim->Instance == TIM2){ // Confirm htim2 is the interrupt clock
+	if(htim->Instance == TIM2){ // Confirm htim2 is the interrupt clock
 		rpm = (num_pulses / disc_openings) / 60;
 		num_pulses = 0; // Clear pulses
 	}
