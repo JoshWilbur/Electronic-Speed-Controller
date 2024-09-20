@@ -45,7 +45,7 @@ static void MX_TIM2_Init(void);
 /**
   * @brief  The application entry point.
   * @retval int
-  */
+  */int LED_dim; // TODO MOVE BACK
 int main(void)
 {
 
@@ -72,6 +72,7 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+  HAL_TIM_Base_Start_IT(&htim2); // Begin TIM2 in interrupt mode
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -86,7 +87,7 @@ int main(void)
   PWM_frequency(25000);
 
   // This part could be done with an interrupt rather than polling
-  int LED_dim;
+
   while (1)
   {
 	  LED_dim = 0;
@@ -358,7 +359,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : PC1 */
   GPIO_InitStruct.Pin = GPIO_PIN_1;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 

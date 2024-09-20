@@ -34,18 +34,21 @@ int user_input(void){
  	HAL_ADC_PollForConversion(&hadc1, 100);
 	input_adc = HAL_ADC_GetValue(&hadc1); // Obtain raw ADC output
 	HAL_ADC_Stop(&hadc1); // End ADC conversion
-	return input_adc * 0.71; // Return ADC value times a scaling factor, more details in notebook
+	return input_adc; // Return ADC value times a scaling factor, more details in notebook
+	// TODO add dead time between state switching
 }
 
-// This function can modify the TIM2 PWM frequency (range: 100Hz to 50kHz) with ease
+// This function can modify the TIM2 PWM frequency (range: 100Hz to 30kHz) with ease
 // See 9/16/24 notebook entry for more details
 void PWM_frequency(int freq){
-	if(freq >= 100 && freq <= 50000){
+	if(freq >= 100 && freq <= 30000){
+		TIM3->CR1 &= ~TIM_CR1_CEN; // Disable timer to allow updating
 		int psc = 0;
 		int arr = 402;
 		psc = (72000000/((arr+1)*(freq))) - 1;
 		TIM3->ARR = arr;
 		TIM3->PSC = psc;
 		TIM3->EGR |= TIM_EGR_UG; // Update TIM3 with new values
+		TIM3->CR1 |= TIM_CR1_CEN; // Toggle timer back on
 	}
 }
