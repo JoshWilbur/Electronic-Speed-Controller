@@ -6,6 +6,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "H_bridge.h"
+#include "interrupt_callbacks.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +46,7 @@ static void MX_TIM2_Init(void);
 /**
   * @brief  The application entry point.
   * @retval int
-  */int LED_dim; // TODO MOVE BACK
+  */
 int main(void)
 {
 
@@ -87,14 +88,14 @@ int main(void)
   PWM_frequency(25000);
 
   // This part could be done with an interrupt rather than polling
-
+  int LED_dim = 0;
   while (1)
   {
 	  LED_dim = 0;
 	  // Test H-Bridge state program with LED's to represent transistors (picture in GitHub)
       while(LED_dim < 65535)
       {
-    	  hbridge_state(LED_dim, 0, 804, 805, 4100);
+    	  hbridge_state(LED_dim, dir_flag);
     	  LED_dim = user_input(); // Obtain input from potentiometer
     	  HAL_Delay(1);
       }
@@ -360,6 +361,12 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin : PC1 */
   GPIO_InitStruct.Pin = GPIO_PIN_1;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PC2 */
+  GPIO_InitStruct.Pin = GPIO_PIN_2;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 

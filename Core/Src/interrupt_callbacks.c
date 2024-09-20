@@ -1,18 +1,25 @@
-// This file contains code to input and interpret the RPM value supplied by the optical encoder
+// This file contains all of the interrupt callback functions
 #include "main.h"
 
 // This link along with ECE271 notes was used to help with setup:
 // https://deepbluembedded.com/stm32-external-interrupt-example-lab/
 
-// Global variables. Some are volatile to prevent compiler optimization, need newest value at all times
+// Set global variables, more info in header file
 volatile int num_pulses = 0;
-volatile int rpm = 0; // RPM calculated by triggering an interrupt every second to count+process pulses
+volatile int rpm = 0;
+volatile int dir_flag = 1;
 int disc_openings = 1;
 
-// EXTI callback for pulse counting
+// GPIO EXTI callback handler
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	// Pulse counting
     if(GPIO_Pin == GPIO_PIN_1){ // Confirm PC1 is the interrupt pin
     	num_pulses++;
+    }
+
+    // Direction switching
+    if(GPIO_Pin == GPIO_PIN_2){ // Confirm PC2 is the interrupt pin
+    	dir_flag = ~dir_flag; // Toggle dir_flag between 0 and 1
     }
 }
 
@@ -22,9 +29,4 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 		rpm = (num_pulses / disc_openings) * 60;
 		num_pulses = 0; // Clear pulses
 	}
-}
-
-// Basic function to get RPM
-int get_rpm(){
-	return rpm;
 }

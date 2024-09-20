@@ -7,7 +7,7 @@
 // Global variables. Some are volatile to prevent compiler optimization, need newest value at all times
 volatile int num_pulses = 0;
 volatile int rpm = 0; // RPM calculated by triggering an interrupt every second to count+process pulses
-int disc_openings = 6;
+int disc_openings = 1;
 
 // EXTI callback for pulse counting
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
@@ -17,9 +17,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 }
 
 // TIM2 callback for triggering interrupt to calculate pulses
-void HAL_TIM2_Period_Callback(TIM_HandleTypeDef *htim){
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	if(htim->Instance == TIM2){ // Confirm htim2 is the interrupt clock
-		rpm = (num_pulses / disc_openings) / 60;
+		rpm = (num_pulses / disc_openings) * 60;
 		num_pulses = 0; // Clear pulses
 	}
 }

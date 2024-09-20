@@ -45,7 +45,7 @@ static void MX_TIM2_Init(void);
 /**
   * @brief  The application entry point.
   * @retval int
-  */
+  */int LED_dim; // TODO MOVE BACK
 int main(void)
 {
 
@@ -72,6 +72,7 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+  HAL_TIM_Base_Start_IT(&htim2); // Begin TIM2 in interrupt mode
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -86,14 +87,14 @@ int main(void)
   PWM_frequency(25000);
 
   // This part could be done with an interrupt rather than polling
-  int LED_dim;
+
   while (1)
   {
 	  LED_dim = 0;
 	  // Test H-Bridge state program with LED's to represent transistors (picture in GitHub)
       while(LED_dim < 65535)
       {
-    	  hbridge_state(LED_dim, 0, 804, 805, 4100);
+    	  hbridge_state(LED_dim, 1);
     	  LED_dim = user_input(); // Obtain input from potentiometer
     	  HAL_Delay(1);
       }
