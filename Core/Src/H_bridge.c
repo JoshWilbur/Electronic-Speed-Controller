@@ -1,5 +1,4 @@
-// This file contains functions which govern the behavior of the H-bridge circuit
-// User input is also handled
+// This file contains functions which handle user input and govern the behavior of the H-bridge circuit
 #include "main.h"
 
 // Function prototypes
@@ -27,18 +26,17 @@ void hbridge_state(int input, int d_flag){
 	}
 }
 
-// This function takes an input from the potentiometer connected to ADC1_CH1
+// This function takes an input from the potentiometer connected to ADC1_CH1 (PC0)
 int user_input(void){
 	int input_adc = 0;
 	HAL_ADC_Start(&hadc1); // Begin ADC conversion
  	HAL_ADC_PollForConversion(&hadc1, 100);
 	input_adc = HAL_ADC_GetValue(&hadc1); // Obtain raw ADC output
 	HAL_ADC_Stop(&hadc1); // End ADC conversion
-	return input_adc * 0.1; // Return ADC value times a scaling factor, more details in notebook
-	// TODO add dead time between state switching
+	return input_adc * 0.095; // Return ADC value times a scaling factor, more details in notebook
 }
 
-// This function can modify the TIM2 PWM frequency (range: 100Hz to 30kHz) with ease
+// This function can modify the TIM3 PWM frequency (effective range: 100Hz to 30kHz) with ease
 // See 9/16/24 notebook entry for more details
 void PWM_frequency(int freq){
 	if(freq >= 100 && freq <= 30000){

@@ -6,6 +6,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "H_bridge.h"
+#include "interrupt_callbacks.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +46,7 @@ static void MX_TIM2_Init(void);
 /**
   * @brief  The application entry point.
   * @retval int
-  */int LED_dim; // TODO MOVE BACK
+  */
 int main(void)
 {
 
@@ -86,18 +87,14 @@ int main(void)
   // Set PWM frequency
   PWM_frequency(25000);
 
-  // This part could be done with an interrupt rather than polling
-
-  while (1)
+  int input_pot = 0;
+  int prior_state = 1;
+  while(1)
   {
-	  LED_dim = 0;
-	  // Test H-Bridge state program with LED's to represent transistors (picture in GitHub)
-      while(LED_dim < 65535)
-      {
-    	  hbridge_state(LED_dim, 1);
-    	  LED_dim = user_input(); // Obtain input from potentiometer
-    	  HAL_Delay(1);
-      }
+	  input_pot = user_input(); // Obtain input from potentiometer
+	  if(prior_state != dir_flag) HAL_Delay(1); // 1ms dead time if state switches
+	  hbridge_state(input_pot, dir_flag);
+	  prior_state = dir_flag;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -363,6 +360,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : PC2 */
+  GPIO_InitStruct.Pin = GPIO_PIN_2;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
   /*Configure GPIO pins : PA4 PA5 */
   GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -373,6 +376,9 @@ static void MX_GPIO_Init(void)
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */

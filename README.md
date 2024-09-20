@@ -1,7 +1,7 @@
 # Electronic-Speed-Controller
 Developers: Amir Seidakhmetov and Joshua Wilbur
 
-Driver code for the H-Bridge circuit is found in /Core/Src. The files main.c, HBridge.c and feedback.c contain custom code developed for this project. 
+Driver code for the H-Bridge circuit is found in /Core/Src. The files main.c, HBridge.c and interrupt_callbacks.c contain custom code developed for this project. 
 A more detailed README will be created in the future.
 
 Image of prototype to test STM32 output (7/19/24)
@@ -9,8 +9,6 @@ Image of prototype to test STM32 output (7/19/24)
 
 
 # Software TODO
-* Raise PWM voltage to greater than 3V. Currently it is ~2.5V at 100% duty 
-  cycle, this is close to the minimum IR2011 V_IL <= 2.2V.
-* Look into making the potentiometer input an interrupt (see main.c 82)
+* Impliment feedback code 
 * Research programming the STM32L476RG without a dev board.
 * Wireless controller (if time avails).

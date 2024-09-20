@@ -87,18 +87,14 @@ int main(void)
   // Set PWM frequency
   PWM_frequency(25000);
 
-  // This part could be done with an interrupt rather than polling
-  int LED_dim = 0;
-  while (1)
+  int input_pot = 0;
+  int prior_state = 1;
+  while(1)
   {
-	  LED_dim = 0;
-	  // Test H-Bridge state program with LED's to represent transistors (picture in GitHub)
-      while(LED_dim < 65535)
-      {
-    	  hbridge_state(LED_dim, dir_flag);
-    	  LED_dim = user_input(); // Obtain input from potentiometer
-    	  HAL_Delay(1);
-      }
+	  input_pot = user_input(); // Obtain input from potentiometer
+	  if(prior_state != dir_flag) HAL_Delay(1); // 1ms dead time if state switches
+	  hbridge_state(input_pot, dir_flag);
+	  prior_state = dir_flag;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -290,7 +286,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 0;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 2850;
+  htim3.Init.Period = 403;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -380,6 +376,9 @@ static void MX_GPIO_Init(void)
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
