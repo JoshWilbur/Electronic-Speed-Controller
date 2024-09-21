@@ -33,7 +33,7 @@ int user_input(void){
  	HAL_ADC_PollForConversion(&hadc1, 100);
 	input_adc = HAL_ADC_GetValue(&hadc1); // Obtain raw ADC output
 	HAL_ADC_Stop(&hadc1); // End ADC conversion
-	return input_adc * 0.1; // Return ADC value times a scaling factor, more details in notebook
+	return input_adc * 0.095; // Return ADC value times a scaling factor, more details in notebook
 }
 
 // This function can modify the TIM3 PWM frequency (effective range: 100Hz to 30kHz) with ease
