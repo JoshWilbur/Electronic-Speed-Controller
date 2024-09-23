@@ -26,6 +26,8 @@ void hbridge_state(int input, int d_flag){
 	}
 }
 
+// https://embeddedthere.com/stm32-adc-tutorial-using-dma-with-hal-code-example/
+
 // This function takes an input from the potentiometer connected to ADC1_CH1 (PC0)
 int user_input(void){
 	int input_adc = 0;

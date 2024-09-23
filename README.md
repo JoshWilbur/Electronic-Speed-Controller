@@ -10,5 +10,6 @@ Image of prototype to test STM32 output (7/19/24)
 
 # Software TODO
 * Impliment feedback code 
+* Clean up unused code (ie photo-interruptor stuff)
 * Research programming the STM32L476RG without a dev board.
 * Wireless controller (if time avails).
