@@ -3,7 +3,6 @@
 #define H_BRIDGE_H
 
 void hbridge_state(int input, int d_flag);
-int user_input(void);
 void PWM_frequency(int freq);
 
 #endif // H_BRIDGE_H

@@ -83,6 +83,7 @@ int main(void)
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_output, 2); // Start DMA on ADC1
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -93,9 +94,14 @@ int main(void)
 
   int input_pot = 0;
   int prior_state = 1;
+  DMA_flag = 0;
   while(1)
   {
-	  input_pot = user_input(); // Obtain input from potentiometer
+	  if(DMA_flag == 1){
+		  DMA_flag = 0;
+		  input_pot = adc_output[0];
+	  }
+	  //input_pot = user_input(adc_output[0]);
 	  if(prior_state != dir_flag) HAL_Delay(1); // 1ms dead time if state switches
 	  hbridge_state(input_pot, dir_flag);
 	  prior_state = dir_flag;
@@ -220,6 +226,7 @@ static void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
+  sConfig.Channel = ADC_CHANNEL_4;
   sConfig.Rank = ADC_REGULAR_RANK_2;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {

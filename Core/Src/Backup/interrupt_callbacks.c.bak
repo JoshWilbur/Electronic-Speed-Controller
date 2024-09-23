@@ -1,8 +1,7 @@
 // This file contains all of the interrupt callback functions
-#include "main.h"
-
 // This link along with ECE271 notes was used to help with setup:
 // https://deepbluembedded.com/stm32-external-interrupt-example-lab/
+#include "main.h"
 
 // Set global variables, more info in header file
 volatile int num_pulses = 0;

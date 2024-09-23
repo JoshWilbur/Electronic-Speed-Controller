@@ -9,7 +9,7 @@ extern volatile int rpm;
 extern volatile int dir_flag; // motor direction flag
 extern int disc_openings; // number of openings in measurement disk
 
-// Function declarations
+// Function prototypes
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 
