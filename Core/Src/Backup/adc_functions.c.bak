@@ -7,10 +7,9 @@
 int user_input(int input_adc);
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
 
-volatile uint32_t adc_output[2]; // Global buffer to store DMA results
-int DMA_flag; // Global flag set to 1 when DMA conversion is complete
+int DMA_flag = 0; // Global flag set to 1 when DMA conversion is complete
 
-// This function takes an input from the potentiometer connected to ADC1_CH1 (PC0)
+// This function takes an input from the potentiometer connected to ADC1_CH5 (PA0)
 int user_input(int input_adc){
 	input_adc = input_adc * 0.01;
 	return input_adc;

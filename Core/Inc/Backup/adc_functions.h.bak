@@ -3,7 +3,6 @@
 #define INC_ADC_FUNCTIONS_H_
 
 // Global buffer to store DMA output
-extern volatile uint32_t adc_output[2];
 extern int DMA_flag;
 
 // Function prototypes
