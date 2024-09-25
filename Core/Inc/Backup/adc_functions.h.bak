@@ -2,12 +2,8 @@
 #ifndef INC_ADC_FUNCTIONS_H_
 #define INC_ADC_FUNCTIONS_H_
 
-// Global flag for DMA conversions
-extern int DMA1_flag;
-extern int DMA2_flag;
-
 // Function prototypes
-int user_input(int input_adc);
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
+int user_input(void);
+int hall_input(void);
 
 #endif /* INC_ADC_FUNCTIONS_H_ */
