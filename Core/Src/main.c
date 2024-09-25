@@ -32,8 +32,6 @@ TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
-uint32_t adc1_output = 1; // Variable for ADC1 output
-uint32_t adc2_output = 1; // Variable for ADC2 output
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -54,7 +52,8 @@ static void MX_ADC2_Init(void);
 /**
   * @brief  The application entry point.
   * @retval int
-  */
+  */ int input_pot;
+  	 int input_hall;
 int main(void)
 {
 
@@ -85,12 +84,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
   // Start clocks for PWM and feedback timing
   HAL_TIM_Base_Start_IT(&htim2); // Begin TIM2 in interrupt mode
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1); // Begin PWM channels 1-4
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
-  HAL_ADC_Start_DMA(&hadc1, &adc1_output, 1); // Start DMA on ADC1, store in adc1_output
-  HAL_ADC_Start_DMA(&hadc2, &adc2_output, 1); // Start DMA on ADC2, store in adc2_output
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -99,22 +96,14 @@ int main(void)
   // Set PWM frequency
   PWM_frequency(25000);
 
-  int input_pot = 0;
-  int input_hall = 0;
+  //int input_pot = 0;
+  //int input_hall = 0;
   int prior_state = 1;
-  DMA1_flag = 0;
-  DMA2_flag = 0;
 
   while(1)
   {
-	  if(DMA1_flag == 1){
-		  DMA1_flag = 0;
-		  input_pot = adc1_output * 0.1;
-	  }
-	  if(DMA2_flag == 1){
-		  DMA2_flag = 0;
-		  input_hall = adc2_output;
-	  }
+	  input_pot = user_input();
+	  input_hall = hall_input();
 	  //input_pot = user_input(adc_output[0]);
 	  if(prior_state != dir_flag) HAL_Delay(1); // 1ms dead time if state switches
 	  hbridge_state(input_pot, dir_flag);
@@ -204,7 +193,7 @@ static void MX_ADC1_Init(void)
   hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   hadc1.Init.LowPowerAutoWait = DISABLE;
-  hadc1.Init.ContinuousConvMode = ENABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
   hadc1.Init.NbrOfConversion = 1;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
@@ -270,7 +259,7 @@ static void MX_ADC2_Init(void)
   hadc2.Init.ScanConvMode = ADC_SCAN_DISABLE;
   hadc2.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   hadc2.Init.LowPowerAutoWait = DISABLE;
-  hadc2.Init.ContinuousConvMode = ENABLE;
+  hadc2.Init.ContinuousConvMode = DISABLE;
   hadc2.Init.NbrOfConversion = 1;
   hadc2.Init.DiscontinuousConvMode = DISABLE;
   hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
