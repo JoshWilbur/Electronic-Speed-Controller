@@ -7,7 +7,8 @@
 int user_input(int input_adc);
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
 
-int DMA_flag = 0; // Global flag set to 1 when DMA conversion is complete
+volatile int DMA1_flag = 0; // Global flag set to 1 when ADC1 DMA conversion is complete
+volatile int DMA2_flag = 0; // Global flag set to 1 when ADC2 DMA conversion is complete
 
 // This function takes an input from the potentiometer connected to ADC1_CH5 (PA0)
 int user_input(int input_adc){
@@ -18,6 +19,9 @@ int user_input(int input_adc){
 // Callback function to set DMA "complete" flag
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
     if (hadc->Instance == ADC1) { // Confirm ADC1 is the trigger
-    	DMA_flag = 1;
+    	DMA1_flag = 1;
+    }
+    if (hadc->Instance == ADC2) { // Confirm ADC2 is the trigger
+    	DMA2_flag = 1;
     }
 }

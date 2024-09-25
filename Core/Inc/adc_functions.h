@@ -2,8 +2,9 @@
 #ifndef INC_ADC_FUNCTIONS_H_
 #define INC_ADC_FUNCTIONS_H_
 
-// Global buffer to store DMA output
-extern int DMA_flag;
+// Global flag for DMA conversions
+extern int DMA1_flag;
+extern int DMA2_flag;
 
 // Function prototypes
 int user_input(int input_adc);

@@ -39,7 +39,7 @@ extern "C" {
 extern ADC_HandleTypeDef hadc1;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim2;
-
+extern uint32_t adc_output[2];
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
