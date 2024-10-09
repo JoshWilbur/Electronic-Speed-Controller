@@ -1,11 +1,12 @@
-// This file contains functions which utilize the on-board ADC
+// This file contains functions which take user input via an ADC and switch
 // This link was referenced for help in setup
 // https://deepbluembedded.com/stm32-adc-read-example-dma-interrupt-polling/
 #include "main.h"
 
 // Function prototypes
 int user_input(void);
-int hall_input(void);
+
+volatile int dir_flag = 1; // Start in FWD direction by default
 
 // This function takes an input from the potentiometer connected to ADC1_CH5 (PA0)
 int user_input(void){
@@ -18,14 +19,11 @@ int user_input(void){
 	return adc_pot; // Return scaled ADC value
 }
 
-// This function takes an input from the hall-effect sensor connected to ADC2_CH6 (PA1)
-int hall_input(void){
-	int adc_hall = 0;
-	HAL_ADC_Start(&hadc2); // Begin ADC conversion
- 	HAL_ADC_PollForConversion(&hadc2, 100);
- 	adc_hall = HAL_ADC_GetValue(&hadc2); // Obtain raw ADC output
-	HAL_ADC_Stop(&hadc2); // End ADC conversion
-	return adc_hall;
+// GPIO EXTI callback handler for direction switching
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+    if(GPIO_Pin == GPIO_PIN_2){ // Check if PC2 is the interrupt pin
+    	dir_flag = !dir_flag; // Toggle dir_flag between BWD and FWD (0/1)
+    }
 }
 
 

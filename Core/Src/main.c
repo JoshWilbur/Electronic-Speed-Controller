@@ -6,8 +6,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "H_bridge.h"
-#include "interrupt_callbacks.h"
-#include "adc_functions.h"
+#include "user_input.h"
+#include "rpm_feedback.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -91,16 +91,23 @@ int main(void)
   // Set PWM frequency
   PWM_frequency(25000);
 
-  //int input_pot = 0;
-  //int input_hall = 0;
+  // Ints to hold input values and state
+  int input_pot = 0;
+  int input_hall = 0;
   int prior_state = 1;
 
   while(1)
   {
 	  input_pot = user_input();
 	  input_hall = hall_input();
-	  if(prior_state != dir_flag) HAL_Delay(1); // 1ms dead time if state switches
+	  if(rpm_flag == 1){
+		  rpm_flag = 0;
+		  hall_rpm(input_hall);
+		  closed_loop_feedback(real_rpm, input_pot);
+	  }
+	  if(prior_state != dir_flag) HAL_Delay(10); // 10ms dead time if state switches
 	  hbridge_state(input_pot, dir_flag);
+
 	  prior_state = dir_flag;
     /* USER CODE END WHILE */
 
