@@ -11,11 +11,10 @@ float closed_loop_feedback(int exp_rpm, int act_rpm);
 
 // Set global variables, more info in header file
 volatile int real_rpm = 0;
-volatile int pulse_num = 0;
 volatile int rpm_flag = 0;
 
 // This function takes an input from the hall-effect sensor connected to ADC2_CH6 (PA1)
-// Effective output range: 0 to ~240, 115 is baseline
+// Effective output range: 0 to ~2400, 1150 is baseline
 int hall_input(void){
 	int adc_hall = 0;
 	HAL_ADC_Start(&hadc2); // Begin ADC conversion
@@ -27,8 +26,8 @@ int hall_input(void){
 
 // This function calculates RPM based on the hall effect readings
 void hall_rpm(int p_num){
-	int magnet_num = 8;
-	real_rpm = (p_num / (magnet_num/2)) * 60;
+	int magnet_num = 8.0;
+	real_rpm = (p_num / (magnet_num/2.0)) * 60.0;
 }
 
 // This function operates the closed loop RPM feedback system
@@ -37,16 +36,6 @@ float closed_loop_feedback(int exp_rpm, int act_rpm){
 	float duty_scale = 1;
 	// TODO: flesh out more, look into proportional control
 	return duty_scale; // Return scaling factor for duty
-}
-
-// ADC conversion complete callback to interpret pulse
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc){
-    int hall_adc = HAL_ADC_GetValue(hadc); // Read ADC value
-
-    // If the ADC value is near a peak or valley, count it as a "pulse"
-    if (hall_adc > 200 || hall_adc < 40){
-    	pulse_num++;
-    }
 }
 
 // TIM2 callback, triggers every 1 second

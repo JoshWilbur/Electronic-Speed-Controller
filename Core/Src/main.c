@@ -49,7 +49,8 @@ static void MX_ADC2_Init(void);
 /**
   * @brief  The application entry point.
   * @retval int
-  */
+  */int input_hall = 0;
+  int pulse_num = 0;
 int main(void)
 {
 
@@ -93,21 +94,35 @@ int main(void)
 
   // Ints to hold input values and state
   int input_pot = 0;
-  int input_hall = 0;
+  //int input_hall = 0;
   int prior_state = 1;
+  int prior_hall = 2; // This variable ensures each peak/valley is only counted once
 
+  // Infinite loop for execution
   while(1)
   {
+	  // Obtain input measurements, both via polling
 	  input_pot = user_input();
 	  input_hall = hall_input();
+
+	  // Interpret hall effect sensor input
+      if (input_hall > 2000 && prior_hall != 1){
+    	  pulse_num++;
+    	  prior_hall = 1;
+      }else if (input_hall < 400 && prior_hall != 0){
+    	  pulse_num++;
+    	  prior_hall = 0;
+      }
+
+      // Every 1 second, enter this sequence to calculate RPM/apply feedback
 	  if(rpm_flag == 1){
 		  rpm_flag = 0;
-		  hall_rpm(input_hall);
+		  hall_rpm(pulse_num);
+		  pulse_num = 0;
 		  closed_loop_feedback(real_rpm, input_pot);
 	  }
-	  if(prior_state != dir_flag) HAL_Delay(10); // 10ms dead time if state switches
+	  if(prior_state != dir_flag) HAL_Delay(1000); // 1s dead time if state switches
 	  hbridge_state(input_pot, dir_flag);
-
 	  prior_state = dir_flag;
     /* USER CODE END WHILE */
 
