@@ -97,6 +97,7 @@ int main(void)
   //int input_hall = 0;
   int prior_state = 1;
   int prior_hall = 2; // This variable ensures each peak/valley is only counted once
+  int exp_rpm;
 
   // Infinite loop for execution
   while(1)
@@ -117,10 +118,13 @@ int main(void)
       // Every 1 second, enter this sequence to calculate RPM/apply feedback
 	  if(rpm_flag == 1){
 		  rpm_flag = 0;
+		  exp_rpm = input_to_rpm(input_pot);
 		  hall_rpm(pulse_num);
 		  pulse_num = 0;
-		  closed_loop_feedback(real_rpm, input_pot);
+		  closed_loop_feedback(real_rpm, exp_rpm);
 	  }
+
+	  // Handle state switching
 	  if(prior_state != dir_flag) HAL_Delay(1000); // 1s dead time if state switches
 	  hbridge_state(input_pot, dir_flag);
 	  prior_state = dir_flag;

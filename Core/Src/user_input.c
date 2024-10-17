@@ -5,6 +5,7 @@
 
 // Function prototypes
 int user_input(void);
+int input_to_rpm(int u_input);
 
 volatile int dir_flag = 1; // Start in FWD direction by default
 
@@ -17,6 +18,19 @@ int user_input(void){
 	HAL_ADC_Stop(&hadc1); // End ADC conversion
 	adc_pot *= 0.099; // ADC value times a scaling factor, more details in notebook
 	return adc_pot; // Return scaled ADC value
+}
+
+// Function to perform linear interpolation on input to find RPM (see 10/17 notes)
+int input_to_rpm(int u_input){
+	// Constants to hold min/max motor RPM (from spec) and inputs
+	const int min_rpm = 60;
+	const int max_rpm = 200;
+	const int min_input = 0;
+	const int max_input = 400;
+
+	// Translate input to RPM
+	int expected_rpm = min_rpm + ((u_input - min_input) / (max_input - min_input)) * (max_rpm - min_rpm);
+	return expected_rpm;
 }
 
 // GPIO EXTI callback handler for direction switching

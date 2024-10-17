@@ -4,6 +4,7 @@
 
 // Function prototypes
 int user_input(void);
+int input_to_rpm(int u_input);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 // Global variable for direction flag

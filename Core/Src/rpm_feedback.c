@@ -33,9 +33,22 @@ void hall_rpm(int p_num){
 // This function operates the closed loop RPM feedback system
 float closed_loop_feedback(int exp_rpm, int act_rpm){
 	int error = exp_rpm - act_rpm;
-	float duty_scale = 1;
-	// TODO: flesh out more, look into proportional control
-	return duty_scale; // Return scaling factor for duty
+	float Kp = 0.05; // Prop. gain constant, higher value = harder correction
+	float duty_scale = 1.0;
+
+
+	if(error != 0){
+		duty_scale = 1.0 + Kp * error; // Set duty scale if error exists
+	}else{
+		return 1.0; // If error is 0, no problems
+	}
+
+	// Ensure duty cycle scale isn't negative
+	if(duty_scale < 0){
+		return 1.0;
+	}
+
+	return duty_scale;
 }
 
 // TIM2 callback, triggers every 1 second
