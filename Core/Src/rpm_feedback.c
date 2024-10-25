@@ -27,7 +27,7 @@ int hall_input(void){
 // This function calculates RPM based on the hall effect readings
 void hall_rpm(int p_num){
 	int magnet_num = 8.0;
-	real_rpm = (p_num / (magnet_num/2.0)) * 60.0;
+	real_rpm = (p_num / (magnet_num/2.0)) * 30.0;
 }
 
 // This function operates the closed loop RPM feedback system
@@ -51,7 +51,7 @@ float closed_loop_feedback(int exp_rpm, int act_rpm){
 	return duty_scale;
 }
 
-// TIM2 callback, triggers every 1 second
+// TIM2 callback, triggers every 2 seconds
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	if(htim->Instance == TIM2){ // Confirm htim2 is the interrupt clock
 		rpm_flag = 1; // Set flag to calculate RPM

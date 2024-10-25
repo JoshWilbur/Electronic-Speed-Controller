@@ -51,6 +51,7 @@ static void MX_ADC2_Init(void);
   * @retval int
   */int input_hall = 0;
   int pulse_num = 0;
+  int exp_rpm, input_pot;
 int main(void)
 {
 
@@ -93,11 +94,11 @@ int main(void)
   PWM_frequency(25000);
 
   // Ints to hold input values and state
-  int input_pot = 0;
+  //int input_pot = 0;
   //int input_hall = 0;
   int prior_state = 1;
   int prior_hall = 2; // This variable ensures each peak/valley is only counted once
-  int exp_rpm;
+  //int exp_rpm;
 
   // Infinite loop for execution
   while(1)
@@ -107,10 +108,10 @@ int main(void)
 	  input_hall = hall_input();
 
 	  // Interpret hall effect sensor input
-      if (input_hall > 2000 && prior_hall != 1){
+      if (input_hall > 2100 && prior_hall != 1){
     	  pulse_num++;
     	  prior_hall = 1;
-      }else if (input_hall < 400 && prior_hall != 0){
+      }else if (input_hall < 100 && prior_hall != 0){
     	  pulse_num++;
     	  prior_hall = 0;
       }
@@ -331,7 +332,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 1999;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 35999;
+  htim2.Init.Period = 71999;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
