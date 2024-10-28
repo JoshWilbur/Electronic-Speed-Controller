@@ -8,6 +8,14 @@ void PWM_frequency(int freq);
 // This function uses input from the potentiometer to determine the H-Bridge circuit state
 // A direction flag, controlled via a switch, controls the direction of the motor
 void hbridge_state(int input, int d_flag){
+	// Dead time if state is switching
+	if (d_flag == -1){
+		TIM3->CCR1 = 0;
+		TIM3->CCR2 = 0;
+		TIM3->CCR3 = 0;
+		TIM3->CCR4 = 0;
+	}
+
 	// Within the "counterclockwise/backward" rotation region, switch transistors 1 and 4 on
 	if(d_flag == 0){
 		TIM3->CCR1 = input;

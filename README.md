@@ -10,5 +10,6 @@ Image of prototype to test STM32 output (7/19/24)
 
 # Software TODO
 * Test feedback code with prototype
-* Try to use DMA again, it was troublesome the first time around
-* Research programming the STM32L476RG without a dev board.
+* Clean up comments and code
+* Flesh out README
+* If time avails, try to use DMA.

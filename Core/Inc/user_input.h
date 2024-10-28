@@ -3,7 +3,7 @@
 #define INC_USER_INPUT_H_
 
 // Function prototypes
-int user_input(void);
+int user_input(int prior_val);
 int input_to_rpm(int u_input);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 

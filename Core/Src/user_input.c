@@ -4,21 +4,42 @@
 #include "main.h"
 
 // Function prototypes
-int user_input(void);
+int user_input(int prior_val);
 int input_to_rpm(int u_input);
 
 volatile int dir_flag = 1; // Start in FWD direction by default
 
 // This function takes an input from the potentiometer connected to ADC1_CH5 (PA0)
-int user_input(void){
-	int adc_pot = 0;
-	HAL_ADC_Start(&hadc1); // Begin ADC conversion
- 	HAL_ADC_PollForConversion(&hadc1, 100);
- 	adc_pot = HAL_ADC_GetValue(&hadc1); // Obtain raw ADC output
-	HAL_ADC_Stop(&hadc1); // End ADC conversion
-	adc_pot *= 0.099; // ADC value times a scaling factor, more details in notebook
-	return adc_pot; // Return scaled ADC value
+int user_input(int prior_val) {
+    static int last_update = 0; // Static to preserve value
+    int adc_pot = 0;
+    int threshold = 10;
+
+    // Use non-blocking SysTick for smoothing input, 15ms per update
+    if(HAL_GetTick() - last_update >= 15){
+        HAL_ADC_Start(&hadc1);
+        HAL_ADC_PollForConversion(&hadc1, 100);
+        adc_pot = HAL_ADC_GetValue(&hadc1); // Obtain raw ADC output
+        HAL_ADC_Stop(&hadc1);
+        adc_pot *= 0.099; // Scale ADC value, see 9/25 notes for me
+
+        // Only adjust if the difference is beyond the threshold
+        if(adc_pot > prior_val + threshold){
+            adc_pot = prior_val + 1;
+        }else if(adc_pot < prior_val - threshold){
+            adc_pot = prior_val - 1;
+        }else{
+            adc_pot = prior_val;
+        }
+
+        // Update the last update time
+        last_update = HAL_GetTick();
+    }else{
+        adc_pot = prior_val;
+    }
+    return adc_pot;
 }
+
 
 // Function to perform linear interpolation on input to find RPM (see 10/17 notes)
 int input_to_rpm(int u_input){
