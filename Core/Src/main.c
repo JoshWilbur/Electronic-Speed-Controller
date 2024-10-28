@@ -44,13 +44,13 @@ static void MX_ADC2_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+int input_hall, pulse_num = 0;
 /* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
   * @retval int
-  */int input_hall = 0;
-  int pulse_num = 0;
+  */
 int main(void)
 {
 

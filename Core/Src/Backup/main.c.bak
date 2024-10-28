@@ -6,8 +6,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "H_bridge.h"
-#include "interrupt_callbacks.h"
-#include "adc_functions.h"
+#include "user_input.h"
+#include "rpm_feedback.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -25,8 +25,6 @@
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 ADC_HandleTypeDef hadc2;
-DMA_HandleTypeDef hdma_adc1;
-DMA_HandleTypeDef hdma_adc2;
 
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
@@ -51,8 +49,8 @@ static void MX_ADC2_Init(void);
 /**
   * @brief  The application entry point.
   * @retval int
-  */ int input_pot;
-  	 int input_hall;
+  */int input_hall = 0;
+  int pulse_num = 0;
 int main(void)
 {
 
@@ -62,7 +60,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-   HAL_Init();
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
   /* USER CODE END Init */
@@ -94,15 +92,40 @@ int main(void)
   // Set PWM frequency
   PWM_frequency(25000);
 
-  //int input_pot = 0;
+  // Ints to hold input values and state
+  int input_pot = 0;
   //int input_hall = 0;
   int prior_state = 1;
+  int prior_hall = 2; // This variable ensures each peak/valley is only counted once
+  int exp_rpm;
 
+  // Infinite loop for execution
   while(1)
   {
+	  // Obtain input measurements, both via polling
 	  input_pot = user_input();
 	  input_hall = hall_input();
-	  if(prior_state != dir_flag) HAL_Delay(1); // 1ms dead time if state switches
+
+	  // Interpret hall effect sensor input
+      if (input_hall > 2000 && prior_hall != 1){
+    	  pulse_num++;
+    	  prior_hall = 1;
+      }else if (input_hall < 400 && prior_hall != 0){
+    	  pulse_num++;
+    	  prior_hall = 0;
+      }
+
+      // Every 1 second, enter this sequence to calculate RPM/apply feedback
+	  if(rpm_flag == 1){
+		  rpm_flag = 0;
+		  exp_rpm = input_to_rpm(input_pot);
+		  hall_rpm(pulse_num);
+		  pulse_num = 0;
+		  closed_loop_feedback(real_rpm, exp_rpm);
+	  }
+
+	  // Handle state switching
+	  if(prior_state != dir_flag) HAL_Delay(1000); // 1s dead time if state switches
 	  hbridge_state(input_pot, dir_flag);
 	  prior_state = dir_flag;
     /* USER CODE END WHILE */
@@ -195,7 +218,7 @@ static void MX_ADC1_Init(void)
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc1.Init.DMAContinuousRequests = ENABLE;
+  hadc1.Init.DMAContinuousRequests = DISABLE;
   hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc1.Init.OversamplingMode = DISABLE;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
@@ -215,7 +238,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_5;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_24CYCLES_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_12CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
@@ -261,7 +284,7 @@ static void MX_ADC2_Init(void)
   hadc2.Init.DiscontinuousConvMode = DISABLE;
   hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc2.Init.DMAContinuousRequests = ENABLE;
+  hadc2.Init.DMAContinuousRequests = DISABLE;
   hadc2.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc2.Init.OversamplingMode = DISABLE;
   if (HAL_ADC_Init(&hadc2) != HAL_OK)
@@ -273,7 +296,7 @@ static void MX_ADC2_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_6;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_24CYCLES_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_12CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
