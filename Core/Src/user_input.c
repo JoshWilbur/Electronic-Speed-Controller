@@ -27,9 +27,10 @@ int input_to_rpm(int u_input){
 	const int max_rpm = 200;
 	const int min_input = 0;
 	const int max_input = 400;
+	int expected_rpm = 0;
 
 	// Translate input to RPM
-	int expected_rpm = min_rpm + ((u_input - min_input) / (max_input - min_input)) * (max_rpm - min_rpm);
+	expected_rpm = min_rpm + ((float)(u_input - min_input) / (max_input - min_input)) * (max_rpm - min_rpm);
 	return expected_rpm;
 }
 
