@@ -17,7 +17,7 @@ void hbridge_state(int input, int d_flag){
 	}
 
 	// Within the "counterclockwise/backward" rotation region, switch transistors 1 and 4 on
-	if(d_flag == 0){
+	if(d_flag == 0 && input < 382){
 		TIM3->CCR1 = input;
 		TIM3->CCR2 = 0;
 		TIM3->CCR3 = 0;
