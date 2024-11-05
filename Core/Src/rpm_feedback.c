@@ -33,12 +33,13 @@ void hall_rpm(int p_num){
 // This function operates the closed loop RPM feedback system
 float closed_loop_feedback(int exp_rpm, int act_rpm){
 	int error = exp_rpm - act_rpm;
-	float Kp = 0.05; // Prop. gain constant, higher value = harder correction
+	float Kp = 0.01; // Prop. gain constant, higher value = harder correction
 	float duty_scale = 1.0;
+	float scaled_error = Kp * error;
 
 
 	if(error != 0){
-		duty_scale = 1.0 + Kp * error; // Set duty scale if error exists
+		duty_scale = 1.0 + scaled_error; // Set duty scale if error exists
 	}else{
 		return 1.0; // If error is 0, no problems
 	}

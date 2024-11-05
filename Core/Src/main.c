@@ -12,6 +12,11 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+ADC_HandleTypeDef hadc1;
+ADC_HandleTypeDef hadc2;
+
+TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim3;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -23,11 +28,6 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-ADC_HandleTypeDef hadc1;
-ADC_HandleTypeDef hadc2;
-
-TIM_HandleTypeDef htim2;
-TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
 /* USER CODE END PV */
@@ -44,10 +44,12 @@ static void MX_ADC2_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+// TODO: make local when debugging is done
 int input_hall = 0;
 int pulse_num = 0;
 int input_pot = 0;
 int exp_rpm;
+float duty_scale = 1.0;
 /* USER CODE END 0 */
 
 /**
@@ -100,6 +102,7 @@ int main(void)
   //int input_hall = 0;
   int prior_state = 1;
   int prior_pot = 0;
+  //float duty_scale = 1.0;
   int prior_hall = 2; // This variable ensures each peak/valley is only counted once
   //int exp_rpm;
 
@@ -107,9 +110,11 @@ int main(void)
   while(1)
   {
 	  // Obtain input measurements, both via polling
-	  input_pot = user_input(prior_pot);
-	  prior_pot = input_pot;
+	  input_pot = user_input(prior_pot) + 100;
 	  input_hall = hall_input();
+
+	  //input_pot *= duty_scale;
+	  prior_pot = input_pot;
 
 	  // Interpret hall effect sensor input
       if (input_hall > 2100 && prior_hall != 1){
@@ -120,13 +125,13 @@ int main(void)
     	  prior_hall = 0;
       }
 
-      // Every 1 second, enter this sequence to calculate RPM/apply feedback
+      // Every 2 seconds, enter this sequence to calculate RPM/apply feedback
 	  if(rpm_flag == 1){
 		  rpm_flag = 0;
 		  exp_rpm = input_to_rpm(input_pot);
 		  hall_rpm(pulse_num);
 		  pulse_num = 0;
-		  closed_loop_feedback(real_rpm, exp_rpm);
+		  duty_scale = closed_loop_feedback(exp_rpm, real_rpm);
 	  }
 
 	  // Handle state switching

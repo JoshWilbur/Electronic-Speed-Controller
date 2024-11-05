@@ -18,10 +18,10 @@ int user_input(int prior_val) {
     // Use non-blocking SysTick for smoothing input, 15ms per update
     if(HAL_GetTick() - last_update >= 15){
         HAL_ADC_Start(&hadc1);
-        HAL_ADC_PollForConversion(&hadc1, 100);
+        HAL_ADC_PollForConversion(&hadc1, 1000);
         adc_pot = HAL_ADC_GetValue(&hadc1); // Obtain raw ADC output
         HAL_ADC_Stop(&hadc1);
-        adc_pot *= 0.099; // Scale ADC value, see 9/25 notes for me
+        adc_pot *= 0.099; // Scale ADC value, see 9/25 notes for more
 
         // Only adjust if the difference is beyond the threshold
         if(adc_pot > prior_val + threshold){
@@ -44,11 +44,13 @@ int user_input(int prior_val) {
 // Function to perform linear interpolation on input to find RPM (see 10/17 notes)
 int input_to_rpm(int u_input){
 	// Constants to hold min/max motor RPM (from spec) and inputs
-	const int min_rpm = 60;
-	const int max_rpm = 200;
-	const int min_input = 0;
+	const int min_rpm = 0;
+	const int max_rpm = 3000;
+	const int min_input = 150; // Lowest input that the motor spins at
 	const int max_input = 400;
 	int expected_rpm = 0;
+
+	if(u_input < min_input) return 0;
 
 	// Translate input to RPM
 	expected_rpm = min_rpm + ((float)(u_input - min_input) / (max_input - min_input)) * (max_rpm - min_rpm);
