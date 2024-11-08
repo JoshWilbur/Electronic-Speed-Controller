@@ -9,26 +9,30 @@ void PWM_frequency(int freq);
 // A direction flag, controlled via a switch, controls the direction of the motor
 void hbridge_state(int input, int d_flag){
 	int max_input = 382;
-
-	// Conditional to determine H-Bridge state
-	if (d_flag == -1){
-		// Dead time if state is switching
-		TIM3->CCR1 = 0;
-		TIM3->CCR2 = 0;
-		TIM3->CCR3 = 0;
-		TIM3->CCR4 = 0;
-	}else if(d_flag == 0 && input < max_input){
-		// Backward motion, Q1/Q4 on
-		TIM3->CCR1 = input;
-		TIM3->CCR2 = 0;
-		TIM3->CCR3 = 0;
-		TIM3->CCR4 = input;
-	}else if(d_flag == 1 && input < max_input){
-		// Forward motion, Q2/Q3 on
-		TIM3->CCR1 = 0;
-		TIM3->CCR2 = input;
-		TIM3->CCR3 = input;
-		TIM3->CCR4 = 0;
+	if (input >= 0 && input < max_input){
+		// Conditional to determine H-Bridge state
+		switch(d_flag){
+		case -1: // Dead time if state is switching
+			TIM3->CCR1 = 0;
+			TIM3->CCR2 = 0;
+			TIM3->CCR3 = 0;
+			TIM3->CCR4 = 0;
+			break;
+		case 0: // Backward motion, Q1/Q4 on
+			TIM3->CCR1 = input;
+			TIM3->CCR2 = 0;
+			TIM3->CCR3 = 0;
+			TIM3->CCR4 = input;
+			break;
+		case 1: // Forward motion, Q2/Q3 on
+			TIM3->CCR1 = 0;
+			TIM3->CCR2 = input;
+			TIM3->CCR3 = input;
+			TIM3->CCR4 = 0;
+			break;
+		default:
+			break;
+		}
 	}
 }
 

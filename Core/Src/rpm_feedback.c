@@ -6,11 +6,10 @@
 
 // Function prototypes
 int hall_input(void);
-void hall_rpm(int p_num);
-float closed_loop_feedback(int exp_rpm, int act_rpm);
+int hall_rpm(int p_num);
+int closed_loop_feedback(int exp_rpm, int act_rpm);
 
-// Set global variables, more info in header file
-volatile int real_rpm = 0;
+// Set global variable for RPM flag, more info in header file
 volatile int rpm_flag = 0;
 
 // This function takes an input from the hall-effect sensor connected to ADC2_CH6 (PA1)
@@ -25,31 +24,30 @@ int hall_input(void){
 }
 
 // This function calculates RPM based on the hall effect readings
-void hall_rpm(int p_num){
+int hall_rpm(int p_num){
 	int magnet_num = 8.0;
-	real_rpm = (p_num / (magnet_num/2.0)) * 30.0;
+	int real_rpm = (p_num / (magnet_num/2.0)) * 30.0;
+	return real_rpm;
 }
 
 // This function operates the closed loop RPM feedback system
-float closed_loop_feedback(int exp_rpm, int act_rpm){
-	int error = exp_rpm - act_rpm;
+int closed_loop_feedback(int exp_rpm, int act_rpm){
+	if(exp_rpm == 0) return 0; // Accounting for base case
+	signed int error = exp_rpm - act_rpm;
 	float Kp = 0.01; // Prop. gain constant, higher value = harder correction
-	float duty_scale = 1.0;
+	int scale = 0;
 	float scaled_error = Kp * error;
 
-
 	if(error != 0){
-		duty_scale = 1.0 + scaled_error; // Set duty scale if error exists
+		scale += (int)scaled_error; // Set duty scale if error exists
 	}else{
-		return 1.0; // If error is 0, no problems
+		return 0; // If error is 0, no problems
 	}
 
-	// Ensure duty cycle scale isn't negative
-	if(duty_scale < 0){
-		return 1.0;
-	}
+	if(scale > 15) return 15;
+	if(scale < -15) return -15;
 
-	return duty_scale;
+	return scale;
 }
 
 // TIM2 callback, triggers every 2 seconds

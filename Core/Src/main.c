@@ -49,7 +49,8 @@ int input_hall = 0;
 int pulse_num = 0;
 int input_pot = 0;
 int exp_rpm;
-float duty_scale = 1.0;
+int real_rpm;
+int feedback = 0;
 /* USER CODE END 0 */
 
 /**
@@ -101,7 +102,8 @@ int main(void)
   //int input_pot = 0;
   //int input_hall = 0;
   int prior_state = 1;
-  int prior_pot = 0;
+  int current_pot = 0;
+  static int last_update = 0; // Static to preserve value
   //float duty_scale = 1.0;
   int prior_hall = 2; // This variable ensures each peak/valley is only counted once
   //int exp_rpm;
@@ -109,12 +111,31 @@ int main(void)
   // Infinite loop for execution
   while(1)
   {
-	  // Obtain input measurements, both via polling
-	  input_pot = user_input(prior_pot) + 100;
-	  input_hall = hall_input();
+	  // Handle state switching
+	  if(prior_state != dir_flag){
+		  hbridge_state(0, -1); // All MOSFETs off before transition
+		  input_pot = 0;
+		  current_pot = 0;
+		  HAL_Delay(1000); // 1s dead time if state switches
+	  }
+	  prior_state = dir_flag;
 
-	  //input_pot *= duty_scale;
-	  prior_pot = input_pot;
+	  // Use non-blocking SysTick for smoothing input, 15ms per update
+	  if(HAL_GetTick() - last_update >= 15){
+		  input_pot = user_input(current_pot);
+		  current_pot = input_pot;
+		  // Update the last update time
+		  last_update = HAL_GetTick();
+		  if((current_pot + feedback > 0) && (current_pot + feedback < 380) && (last_update % 4 == 0)){
+			  current_pot += feedback/3;
+		  }
+	  }
+
+	  // Obtain input measurements, both via polling
+	  input_hall = hall_input();
+	  exp_rpm = input_to_rpm(input_pot);
+	  hbridge_state(input_pot, dir_flag); // Set H-Bridge state
+
 
 	  // Interpret hall effect sensor input
       if (input_hall > 2100 && prior_hall != 1){
@@ -128,21 +149,10 @@ int main(void)
       // Every 2 seconds, enter this sequence to calculate RPM/apply feedback
 	  if(rpm_flag == 1){
 		  rpm_flag = 0;
-		  exp_rpm = input_to_rpm(input_pot);
-		  hall_rpm(pulse_num);
 		  pulse_num = 0;
-		  duty_scale = closed_loop_feedback(exp_rpm, real_rpm);
+		  real_rpm = hall_rpm(pulse_num);
+		  feedback = closed_loop_feedback(exp_rpm, real_rpm);
 	  }
-
-	  // Handle state switching
-	  if(prior_state != dir_flag){
-		  hbridge_state(0, -1); // All MOSFETs off before transition
-		  input_pot = 0;
-		  prior_pot = 0;
-		  HAL_Delay(1000); // 1s dead time if state switches
-	  }
-	  hbridge_state(input_pot, dir_flag);
-	  prior_state = dir_flag;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
