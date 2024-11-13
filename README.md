@@ -9,9 +9,9 @@ Image of prototype to test STM32 output (7/19/24)
 
 
 # Software TODO
-* Modify switch program to use 3V3/GND for directions
 * Test feedback code with prototype
 * Clean up comments and code
+* Get rid of most global variables once testing is done
 * Upload PCB files
 * Flesh out README (pictures of PCB, prototype, schematic...)
 * If time avails, try to use DMA.

@@ -8,8 +8,7 @@ void PWM_frequency(int freq);
 // This function uses input from the potentiometer to determine the H-Bridge circuit state
 // A direction flag, controlled via a switch, controls the direction of the motor
 void hbridge_state(int input, int d_flag){
-	int max_input = 382;
-	if (input >= 0 && input < max_input){
+	if (input >= 0 && input < 380){
 		// Conditional to determine H-Bridge state
 		switch(d_flag){
 		case -1: // Dead time if state is switching

@@ -116,24 +116,24 @@ int main(void)
 		  hbridge_state(0, -1); // All MOSFETs off before transition
 		  input_pot = 0;
 		  current_pot = 0;
-		  HAL_Delay(1000); // 1s dead time if state switches
+		  HAL_Delay(2000); // 2s dead time if state switches
 	  }
 	  prior_state = dir_flag;
 
-	  // Use non-blocking SysTick for smoothing input, 15ms per update
-	  if(HAL_GetTick() - last_update >= 15){
+	  // Use non-blocking SysTick for smoothing input, 20ms per update
+	  if(HAL_GetTick() - last_update >= 20){
 		  input_pot = user_input(current_pot);
 		  current_pot = input_pot;
 		  // Update the last update time
 		  last_update = HAL_GetTick();
+		  /*
 		  if((current_pot + feedback > 0) && (current_pot + feedback < 380) && (last_update % 4 == 0)){
 			  current_pot += feedback/3;
-		  }
+		  }*/
 	  }
 
 	  // Obtain input measurements, both via polling
 	  input_hall = hall_input();
-	  exp_rpm = input_to_rpm(input_pot);
 	  hbridge_state(input_pot, dir_flag); // Set H-Bridge state
 
 
@@ -151,6 +151,7 @@ int main(void)
 		  rpm_flag = 0;
 		  pulse_num = 0;
 		  real_rpm = hall_rpm(pulse_num);
+		  exp_rpm = input_to_rpm(input_pot);
 		  feedback = closed_loop_feedback(exp_rpm, real_rpm);
 	  }
     /* USER CODE END WHILE */
