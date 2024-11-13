@@ -29,7 +29,7 @@ float Scale_ADC_to_Voltage(uint32_t adc_value) {
     float battery_voltage = (adc_value / 4095.0) * 42;  // Convert to voltage
     return battery_voltage;  // Apply additional scaling if needed
 }
-
+// Using pin PC0
 
 /*Configure GPIO pin : B1_Pin */
 /*GPIO_InitStruct.Pin = B1_Pin;

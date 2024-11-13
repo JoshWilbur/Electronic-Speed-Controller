@@ -26,8 +26,8 @@ int hall_input(void){
 // This function calculates RPM based on the hall effect readings
 int hall_rpm(int p_num){
 	int magnet_num = 8.0;
-	int real_rpm = (p_num / (magnet_num/2.0)) * 30.0;
-	return real_rpm;
+	int rpm = (p_num / (magnet_num/2.0)) * 30.0;
+	return rpm;
 }
 
 // This function operates the closed loop RPM feedback system

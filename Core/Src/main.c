@@ -49,7 +49,7 @@ int input_hall = 0;
 int pulse_num = 0;
 int input_pot = 0;
 int exp_rpm;
-int real_rpm;
+int real_rpm = 0;
 int feedback = 0;
 /* USER CODE END 0 */
 
@@ -126,16 +126,11 @@ int main(void)
 		  current_pot = input_pot;
 		  // Update the last update time
 		  last_update = HAL_GetTick();
-		  /*
-		  if((current_pot + feedback > 0) && (current_pot + feedback < 380) && (last_update % 4 == 0)){
-			  current_pot += feedback/3;
-		  }*/
 	  }
 
 	  // Obtain input measurements, both via polling
 	  input_hall = hall_input();
 	  hbridge_state(input_pot, dir_flag); // Set H-Bridge state
-
 
 	  // Interpret hall effect sensor input
       if (input_hall > 2100 && prior_hall != 1){
@@ -149,8 +144,8 @@ int main(void)
       // Every 2 seconds, enter this sequence to calculate RPM/apply feedback
 	  if(rpm_flag == 1){
 		  rpm_flag = 0;
-		  pulse_num = 0;
 		  real_rpm = hall_rpm(pulse_num);
+		  pulse_num = 0;
 		  exp_rpm = input_to_rpm(input_pot);
 		  feedback = closed_loop_feedback(exp_rpm, real_rpm);
 	  }

@@ -17,8 +17,8 @@ int user_input(int current_val) {
 	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
 	adc_pot = HAL_ADC_GetValue(&hadc1); // Obtain raw ADC output
 	HAL_ADC_Stop(&hadc1);
-	scaled_pot = adc_pot * 0.074; // Scale ADC value, see 9/25 & 11/13 notes
-	scaled_pot += 100;
+	scaled_pot = adc_pot * 0.062; // Scale ADC value, see 9/25 & 11/13 notes
+	scaled_pot += 150;
 
 	// Adjust current value based on input value
 	if(scaled_pot > current_val){
