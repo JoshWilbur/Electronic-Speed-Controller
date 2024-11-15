@@ -32,20 +32,20 @@ int hall_rpm(int p_num){
 
 // This function operates the closed loop RPM feedback system
 int closed_loop_feedback(int exp_rpm, int act_rpm){
-	if(exp_rpm == 0) return 0; // Accounting for base case
+	if(exp_rpm == 0 || act_rpm == 0) return 0; // Accounting for base case
 	signed int error = exp_rpm - act_rpm;
-	float Kp = 0.01; // Prop. gain constant, higher value = harder correction
+	float Kp = 0.035; // Prop. gain constant, higher value = harder correction
 	int scale = 0;
 	float scaled_error = Kp * error;
 
 	if(error != 0){
 		scale += (int)scaled_error; // Set duty scale if error exists
 	}else{
-		return 0; // If error is 0, no problems
+		return 0; // If error is 0, no feedback needed
 	}
 
-	if(scale > 15) return 15;
-	if(scale < -15) return -15;
+	if(scale > 150) return 150;
+	if(scale < -150) return -150;
 
 	return scale;
 }

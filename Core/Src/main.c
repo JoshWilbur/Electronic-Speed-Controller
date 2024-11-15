@@ -48,6 +48,7 @@ static void MX_ADC2_Init(void);
 int input_hall = 0;
 int pulse_num = 0;
 int input_pot = 0;
+int feedback_pot = 0;
 int exp_rpm;
 int real_rpm = 0;
 int feedback = 0;
@@ -102,7 +103,6 @@ int main(void)
   //int input_pot = 0;
   //int input_hall = 0;
   int prior_state = 1;
-  int current_pot = 0;
   static int last_update = 0; // Static to preserve value
   //float duty_scale = 1.0;
   int prior_hall = 2; // This variable ensures each peak/valley is only counted once
@@ -115,25 +115,27 @@ int main(void)
 	  if(prior_state != dir_flag){
 		  hbridge_state(0, -1); // All MOSFETs off before transition
 		  input_pot = 0;
-		  current_pot = 0;
+		  feedback_pot = 0;
+		  feedback = 0;
 		  HAL_Delay(2000); // 2s dead time if state switches
 	  }
 	  prior_state = dir_flag;
 
 	  // Use non-blocking SysTick for smoothing input, 20ms per update
 	  if(HAL_GetTick() - last_update >= 20){
-		  input_pot = user_input(current_pot);
-		  current_pot = input_pot;
+		  input_pot = user_input();
+		  feedback_pot = update_input(input_pot, feedback_pot, feedback);
+
 		  // Update the last update time
 		  last_update = HAL_GetTick();
 	  }
 
 	  // Obtain input measurements, both via polling
 	  input_hall = hall_input();
-	  hbridge_state(input_pot, dir_flag); // Set H-Bridge state
+	  hbridge_state(feedback_pot, dir_flag); // Set H-Bridge state
 
 	  // Interpret hall effect sensor input
-      if (input_hall > 2100 && prior_hall != 1){
+      if (input_hall > 2250 && prior_hall != 1){
     	  pulse_num++;
     	  prior_hall = 1;
       }else if (input_hall < 100 && prior_hall != 0){

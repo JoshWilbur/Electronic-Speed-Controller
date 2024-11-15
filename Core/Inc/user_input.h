@@ -3,7 +3,8 @@
 #define INC_USER_INPUT_H_
 
 // Function prototypes
-int user_input(int current_val);
+int user_input();
+int update_input(int current_val, int prior_val, int feedback);
 int input_to_rpm(int u_input);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 

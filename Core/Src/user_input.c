@@ -4,38 +4,46 @@
 #include "main.h"
 
 // Function prototypes
-int user_input(int current_val);
+int user_input();
+int update_input(int current_val, int prior_val, int feedback);
 int input_to_rpm(int u_input);
 
 volatile int dir_flag = -1; // Start in OFF state by default
 
 // This function takes an input from the potentiometer connected to ADC1_CH5 (PA0)
-int user_input(int current_val) {
+int user_input(){
     int adc_pot = 0;
     int scaled_pot = 0;
 	HAL_ADC_Start(&hadc1);
 	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
 	adc_pot = HAL_ADC_GetValue(&hadc1); // Obtain raw ADC output
 	HAL_ADC_Stop(&hadc1);
+	if(adc_pot == 0) return 0;
 	scaled_pot = adc_pot * 0.062; // Scale ADC value, see 9/25 & 11/13 notes
 	scaled_pot += 150;
+	if(scaled_pot > 380) return 380;
+	return scaled_pot;
+}
 
-	// Adjust current value based on input value
-	if(scaled_pot > current_val){
-		current_val++; // Using previous value to avoid sharp jumps
-	}else if(scaled_pot < current_val){
-		current_val--;
+int update_input(int input, int prior_val, int feedback){
+	input += feedback;
+
+	// Adjust output value based on prior value to avoid sharp jumps
+	if(prior_val < input){
+		prior_val++;
+	}else if(prior_val > input){
+		prior_val--;
 	}
 
 	// Turn off MOSFETs if physical input is 0
-	if(adc_pot == 0){
-		current_val -= 2;
+	if(input == 0){
+		prior_val -= 2;
 	}
 
 	// Ensure input value stays within bounds
-	if(current_val > 380) return 380;
-	if(current_val < 0) return 0;
-	return current_val;
+	if(prior_val > 380) return 380;
+	if(prior_val < 0) return 0;
+	return prior_val;
 }
 
 
@@ -43,7 +51,7 @@ int user_input(int current_val) {
 int input_to_rpm(int u_input){
 	// Constants to hold min/max motor RPM (from spec) and inputs
 	const int min_rpm = 0;
-	const int max_rpm = 3000;
+	const int max_rpm = 3750;
 	const int min_input = 150; // Lowest input that the motor spins at
 	const int max_input = 380;
 	int expected_rpm = 0;
