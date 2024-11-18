@@ -3,6 +3,9 @@
 // https://deepbluembedded.com/stm32-adc-read-example-dma-interrupt-polling/
 #include "main.h"
 
+#define MIN_INPUT 170 // Lowest input that the motor spins at
+#define MAX_INPUT 238 // Maximum input to stay in spec
+
 // Function prototypes
 int user_input();
 int update_input(int current_val, int prior_val, int feedback);
@@ -19,9 +22,9 @@ int user_input(){
 	adc_pot = HAL_ADC_GetValue(&hadc1); // Obtain raw ADC output
 	HAL_ADC_Stop(&hadc1);
 	if(adc_pot == 0) return 0;
-	scaled_pot = adc_pot * 0.062; // Scale ADC value, see 9/25 & 11/13 notes
-	scaled_pot += 150;
-	if(scaled_pot > 380) return 380;
+	scaled_pot = adc_pot * 0.018; // Scale ADC value, see 9/25 & 11/13 notes
+	scaled_pot += MIN_INPUT;
+	if(scaled_pot > MAX_INPUT) return MAX_INPUT;
 	return scaled_pot;
 }
 
@@ -41,7 +44,7 @@ int update_input(int input, int prior_val, int feedback){
 	}
 
 	// Ensure input value stays within bounds
-	if(prior_val > 380) return 380;
+	if(prior_val > MAX_INPUT+50) return MAX_INPUT+50;
 	if(prior_val < 0) return 0;
 	return prior_val;
 }
@@ -51,9 +54,9 @@ int update_input(int input, int prior_val, int feedback){
 int input_to_rpm(int u_input){
 	// Constants to hold min/max motor RPM (from spec) and inputs
 	const int min_rpm = 0;
-	const int max_rpm = 3750;
-	const int min_input = 150; // Lowest input that the motor spins at
-	const int max_input = 380;
+	const int max_rpm = 870;
+	const int min_input = MIN_INPUT;
+	const int max_input = MAX_INPUT;
 	int expected_rpm = 0;
 
 	if(u_input < min_input) return 0;
