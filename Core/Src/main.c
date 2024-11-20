@@ -126,8 +126,8 @@ int main(void)
 	  }
 	  prior_state = dir_flag;
 
-	  // Use non-blocking SysTick for smoothing input, 10ms per update
-	  if(HAL_GetTick() - last_update >= 10){
+	  // Use non-blocking SysTick to slow input update, 5ms per update
+	  if(HAL_GetTick() - last_update >= 5){
 		  input_pot = user_input();
 		  feedback_pot = update_input(input_pot, feedback_pot, feedback);
 
@@ -135,15 +135,15 @@ int main(void)
 		  last_update = HAL_GetTick();
 	  }
 
-	  // Obtain input measurements, both via polling
-	  input_hall = hall_input();
-	  hbridge_state(feedback_pot, dir_flag); // Set H-Bridge state
+	  // Set H-Bridge state
+	  hbridge_state(feedback_pot, dir_flag);
 
-	  // Interpret hall effect sensor input
-      if (input_hall > 1800 && prior_hall != 1){
+	  // Obtain and interpret hall effect sensor input
+	  input_hall = hall_input();
+      if (input_hall > 1850 && prior_hall != 1){
     	  pulse_num++;
     	  prior_hall = 1;
-      }else if (input_hall < 500 && prior_hall != 0){
+      }else if (input_hall < 450 && prior_hall != 0){
     	  pulse_num++;
     	  prior_hall = 0;
       }

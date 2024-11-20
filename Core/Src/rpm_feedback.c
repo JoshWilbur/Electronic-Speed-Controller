@@ -34,7 +34,7 @@ int hall_rpm(int p_num){
 int closed_loop_feedback(int exp_rpm, int act_rpm){
 	if(exp_rpm == 0 || act_rpm == 0) return 0; // Accounting for base case
 	signed int error = exp_rpm - act_rpm;
-	float Kp = 0.05; // Prop. gain constant, higher value = harder correction
+	float Kp = 0.02; // Prop. gain constant, higher value = harder correction
 	int scale = 0;
 	float scaled_error = Kp * error;
 
