@@ -3,7 +3,7 @@
 // https://deepbluembedded.com/stm32-adc-read-example-dma-interrupt-polling/
 #include "main.h"
 
-#define MIN_INPUT 210 // Lowest input that the motor spins at
+#define MIN_INPUT 217 // Lowest input that the motor spins at
 #define MAX_INPUT 242 // Maximum input to stay in spec
 
 // Function prototypes
@@ -22,7 +22,7 @@ int user_input(){
 	adc_pot = HAL_ADC_GetValue(&hadc1); // Obtain raw ADC output
 	HAL_ADC_Stop(&hadc1);
 	if(adc_pot == 0) return 0;
-	scaled_pot = adc_pot * 0.0083; // Scale ADC value, see 9/25 & 11/20 notes
+	scaled_pot = adc_pot * 0.0065; // Scale ADC value, see 9/25 & 11/22 notes
 	scaled_pot += MIN_INPUT;
 	if(scaled_pot > MAX_INPUT) return MAX_INPUT;
 	return scaled_pot;
@@ -44,7 +44,7 @@ int update_input(int input, int prior_val, int feedback){
 	}
 
 	// Ensure input value stays within bounds
-	if(prior_val > MAX_INPUT+100) return MAX_INPUT+100;
+	if(prior_val > MAX_INPUT+120) return MAX_INPUT+120;
 	if(prior_val < 0) return 0;
 	return prior_val;
 }
@@ -53,8 +53,9 @@ int update_input(int input, int prior_val, int feedback){
 // Function to perform linear interpolation on input to find RPM (see 10/17 notes)
 int input_to_rpm(int u_input){
 	// Constants to hold min/max motor RPM (from spec) and inputs
-	const int min_rpm = 0;
-	const int max_rpm = 950; // Gear ratio is ~4.5:1
+	const int gear_ratio = 4.5;
+	const int min_rpm = 65 * gear_ratio;
+	const int max_rpm = 225 * gear_ratio;
 	const int min_input = MIN_INPUT;
 	const int max_input = MAX_INPUT;
 	int expected_rpm = 0;

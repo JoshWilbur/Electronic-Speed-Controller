@@ -44,8 +44,8 @@ int closed_loop_feedback(int exp_rpm, int act_rpm){
 		return 0; // If error is 0, no feedback needed
 	}
 
-	if(scale > 100) return 100;
-	if(scale < -100) return -100;
+	if(scale > 120) return 120;
+	if(scale < -120) return -120;
 
 	return scale;
 }
