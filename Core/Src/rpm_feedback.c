@@ -33,10 +33,28 @@ int hall_rpm(int p_num){
 // This function operates the closed loop RPM feedback system
 int closed_loop_feedback(int exp_rpm, int act_rpm){
 	if(exp_rpm == 0 || act_rpm == 0) return 0; // Accounting for base case
+
+	// variables to keep integral and last error states
+	static float integral = 0.00;
+	static int last_error = 0;
+
 	signed int error = exp_rpm - act_rpm;
 	float Kp = 0.02; // Prop. gain constant, higher value = harder correction
-	int scale = 0;
+	float Ki = 0.001; // Integral Gain
+	float Kd = 0.005; // Derivative Gain
+
+	integral += error;
+	float integral_term = Ki * integral;
+
+	float derivative = error - last_error;
+	float derivative_term = Kd * derivative;
+
+	//int scale = 0;
 	float scaled_error = Kp * error;
+
+	float scale = scaled_error + integral_term + derivative_term;
+
+
 
 	if(error != 0){
 		scale += (int)scaled_error; // Set duty scale if error exists
@@ -46,6 +64,8 @@ int closed_loop_feedback(int exp_rpm, int act_rpm){
 
 	if(scale > 120) return 120;
 	if(scale < -120) return -120;
+
+	last_error = error;
 
 	return scale;
 }
