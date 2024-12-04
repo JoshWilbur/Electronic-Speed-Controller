@@ -29,7 +29,11 @@ int hall_rpm(int p_num){
 	int rpm = (p_num / (magnet_num/2.0)) * 30.0;
 	return rpm;
 }
-
+/////////////////Temporary global for tuning
+		float Kp = 0.02; // Prop. gain constant, higher value = harder correction
+		float Ki = 0.001; // Integral Gain
+		float Kd = 0.005; // Derivative Gain
+/////////////////////////////////////////////
 // This function operates the closed loop RPM feedback system
 int closed_loop_feedback(int exp_rpm, int act_rpm){
 	if(exp_rpm == 0 || act_rpm == 0) return 0; // Accounting for base case
@@ -39,9 +43,7 @@ int closed_loop_feedback(int exp_rpm, int act_rpm){
 	static int last_error = 0;
 
 	signed int error = exp_rpm - act_rpm;
-	float Kp = 0.02; // Prop. gain constant, higher value = harder correction
-	float Ki = 0.001; // Integral Gain
-	float Kd = 0.005; // Derivative Gain
+
 
 	integral += error;
 	float integral_term = Ki * integral;
