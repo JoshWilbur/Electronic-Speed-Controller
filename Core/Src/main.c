@@ -238,7 +238,7 @@ int main(void)
 		  feedback = closed_loop_feedback(exp_rpm, real_rpm);
 	  }
 
-	  HT16K33_DisplayInteger(input_pot);
+	  HT16K33_DisplayInteger(real_rpm);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
