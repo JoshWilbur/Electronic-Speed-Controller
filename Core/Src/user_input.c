@@ -4,7 +4,7 @@
 #include "main.h"
 
 #define MIN_INPUT 200 // Lowest input that the motor spins at
-#define MAX_INPUT 242 // Maximum input to stay in spec
+#define MAX_INPUT 240 // Maximum input to stay in spec
 
 // Function prototypes
 int user_input();
@@ -18,13 +18,13 @@ volatile int dir_flag = -1; // Start in OFF state by default
 int user_input(){
     int adc_pot = 0;
     int scaled_pot = 0;
-    float INPUT_SCALE = ((MAX_INPUT-MIN_INPUT)/380.0) * 0.099;
+    float INPUT_SCALE = ((MAX_INPUT-MIN_INPUT)/380.0) * 0.099; // See 9/25 & 11/22 notes
 	HAL_ADC_Start(&hadc1);
 	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
 	adc_pot = HAL_ADC_GetValue(&hadc1); // Obtain raw ADC output
 	HAL_ADC_Stop(&hadc1);
 	if(adc_pot == 0) return 0;
-	scaled_pot = adc_pot * INPUT_SCALE; // Scale ADC value, see 9/25 & 11/22 notes
+	scaled_pot = adc_pot * INPUT_SCALE; // Scale ADC value
 	scaled_pot += MIN_INPUT;
 	if(scaled_pot > MAX_INPUT) return MAX_INPUT;
 	return scaled_pot;
@@ -56,8 +56,8 @@ int update_input(int input, int prior_val, int feedback){
 int input_to_rpm(int u_input){
 	// Constants to hold min/max motor RPM (from spec) and inputs
 	const int gear_ratio = 4.5;
-	const int min_rpm = 65 * gear_ratio;
-	const int max_rpm = 225 * gear_ratio;
+	const int min_rpm = 50 * gear_ratio;
+	const int max_rpm = 200 * gear_ratio;
 	const int min_input = MIN_INPUT;
 	const int max_input = MAX_INPUT;
 	int expected_rpm = 0;

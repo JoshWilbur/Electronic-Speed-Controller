@@ -9,8 +9,7 @@ Image of prototype to test STM32 output (7/19/24)
 
 
 # Software TODO (due date)
-* Integrate voltage feedback code (by 11/30)
-* Get SWD working: https://deepbluembedded.com/stm32-debugging-with-st-link-v2-swd-serial-wire-viewer/ (by 12/1)
+* Implement 7 seg display (12/8)
 * Clean up comments and code (by 12/8)
 * Get rid of most global variables once testing is done (by 12/8)
 * Upload PCB files (by 12/15)

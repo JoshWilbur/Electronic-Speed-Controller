@@ -140,7 +140,7 @@ int main(void)
 
 	  // Obtain and interpret hall effect sensor input
 	  input_hall = hall_input();
-      if (input_hall > 1850 && prior_hall != 1){
+      if (input_hall > 1825 && prior_hall != 1){
     	  pulse_num++;
     	  prior_hall = 1;
       }else if (input_hall < 450 && prior_hall != 0){

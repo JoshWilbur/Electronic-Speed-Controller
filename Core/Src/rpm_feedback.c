@@ -29,46 +29,42 @@ int hall_rpm(int p_num){
 	int rpm = (p_num / (magnet_num/2.0)) * 30.0;
 	return rpm;
 }
-/////////////////Temporary global for tuning
-		float Kp = 0.02; // Prop. gain constant, higher value = harder correction
-		float Ki = 0.001; // Integral Gain
-		float Kd = 0.005; // Derivative Gain
-/////////////////////////////////////////////
+
 // This function operates the closed loop RPM feedback system
 int closed_loop_feedback(int exp_rpm, int act_rpm){
 	if(exp_rpm == 0 || act_rpm == 0) return 0; // Accounting for base case
 
-	// variables to keep integral and last error states
+	// variables to keep integral and last error states, static to persist
 	static float integral = 0.00;
 	static int last_error = 0;
 
+	float Kp = 0.01; // Prop. gain constant, higher value = harder correction
+	float Ki = 0.003; // Integral Gain
+	float Kd = 0.012; // Derivative Gain
+
 	signed int error = exp_rpm - act_rpm;
+	float scaled_error = Kp * error;
 
 
+	// Conditional to prevent integral windup
+	// Good article on that here: https://control.com/technical-articles/intergral-windup-method-in-pid-control/
+	if(integral > 100){
+		integral = 100;
+	}else if(integral < -100){
+		integral = -100;
+	}
 	integral += error;
 	float integral_term = Ki * integral;
 
+	// Handle derivative term
 	float derivative = error - last_error;
 	float derivative_term = Kd * derivative;
-
-	//int scale = 0;
-	float scaled_error = Kp * error;
-
-	float scale = scaled_error + integral_term + derivative_term;
-
-
-
-	if(error != 0){
-		scale += (int)scaled_error; // Set duty scale if error exists
-	}else{
-		return 0; // If error is 0, no feedback needed
-	}
-
-	if(scale > 120) return 120;
-	if(scale < -120) return -120;
-
 	last_error = error;
 
+	// Output scale to adjust PWM input to H-Bridge
+	int scale = scaled_error + integral_term + derivative_term;
+	if(scale > 120) return 120;
+	if(scale < -120) return -120;
 	return scale;
 }
 
