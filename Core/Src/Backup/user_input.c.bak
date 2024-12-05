@@ -3,10 +3,14 @@
 // https://deepbluembedded.com/stm32-adc-read-example-dma-interrupt-polling/
 #include "main.h"
 
+#define MIN_INPUT 200 // Lowest input that the motor spins at
+#define MAX_INPUT 240 // Maximum input to stay in spec
+
 // Function prototypes
 int user_input();
 int update_input(int current_val, int prior_val, int feedback);
 int input_to_rpm(int u_input);
+
 
 volatile int dir_flag = -1; // Start in OFF state by default
 
@@ -14,14 +18,15 @@ volatile int dir_flag = -1; // Start in OFF state by default
 int user_input(){
     int adc_pot = 0;
     int scaled_pot = 0;
+    float INPUT_SCALE = ((MAX_INPUT-MIN_INPUT)/380.0) * 0.099; // See 9/25 & 11/22 notes
 	HAL_ADC_Start(&hadc1);
 	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
 	adc_pot = HAL_ADC_GetValue(&hadc1); // Obtain raw ADC output
 	HAL_ADC_Stop(&hadc1);
 	if(adc_pot == 0) return 0;
-	scaled_pot = adc_pot * 0.062; // Scale ADC value, see 9/25 & 11/13 notes
-	scaled_pot += 150;
-	if(scaled_pot > 380) return 380;
+	scaled_pot = adc_pot * INPUT_SCALE; // Scale ADC value
+	scaled_pot += MIN_INPUT;
+	if(scaled_pot > MAX_INPUT) return MAX_INPUT;
 	return scaled_pot;
 }
 
@@ -41,7 +46,7 @@ int update_input(int input, int prior_val, int feedback){
 	}
 
 	// Ensure input value stays within bounds
-	if(prior_val > 380) return 380;
+	if(prior_val > MAX_INPUT+120) return MAX_INPUT+120;
 	if(prior_val < 0) return 0;
 	return prior_val;
 }
@@ -50,10 +55,11 @@ int update_input(int input, int prior_val, int feedback){
 // Function to perform linear interpolation on input to find RPM (see 10/17 notes)
 int input_to_rpm(int u_input){
 	// Constants to hold min/max motor RPM (from spec) and inputs
-	const int min_rpm = 0;
-	const int max_rpm = 3750;
-	const int min_input = 150; // Lowest input that the motor spins at
-	const int max_input = 380;
+	const int gear_ratio = 4.5;
+	const int min_rpm = 50 * gear_ratio;
+	const int max_rpm = 200 * gear_ratio;
+	const int min_input = MIN_INPUT;
+	const int max_input = MAX_INPUT;
 	int expected_rpm = 0;
 
 	if(u_input < min_input) return 0;

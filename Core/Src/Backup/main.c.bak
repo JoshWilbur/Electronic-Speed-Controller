@@ -8,6 +8,8 @@
 #include "H_bridge.h"
 #include "user_input.h"
 #include "rpm_feedback.h"
+#include "stm32l4xx_hal.h"
+#include "7_segment_display.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -96,6 +98,8 @@ int main(void)
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
+
+  HT16K33_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -126,8 +130,8 @@ int main(void)
 	  }
 	  prior_state = dir_flag;
 
-	  // Use non-blocking SysTick for smoothing input, 20ms per update
-	  if(HAL_GetTick() - last_update >= 20){
+	  // Use non-blocking SysTick to slow input update, 5ms per update
+	  if(HAL_GetTick() - last_update >= 5){
 		  input_pot = user_input();
 		  feedback_pot = update_input(input_pot, feedback_pot, feedback);
 
@@ -135,15 +139,15 @@ int main(void)
 		  last_update = HAL_GetTick();
 	  }
 
-	  // Obtain input measurements, both via polling
-	  input_hall = hall_input();
-	  hbridge_state(feedback_pot, dir_flag); // Set H-Bridge state
+	  // Set H-Bridge state
+	  hbridge_state(feedback_pot, dir_flag);
 
-	  // Interpret hall effect sensor input
-      if (input_hall > 2250 && prior_hall != 1){
+	  // Obtain and interpret hall effect sensor input
+	  input_hall = hall_input();
+      if (input_hall > 1825 && prior_hall != 1){
     	  pulse_num++;
     	  prior_hall = 1;
-      }else if (input_hall < 100 && prior_hall != 0){
+      }else if (input_hall < 450 && prior_hall != 0){
     	  pulse_num++;
     	  prior_hall = 0;
       }
@@ -156,6 +160,8 @@ int main(void)
 		  exp_rpm = input_to_rpm(input_pot);
 		  feedback = closed_loop_feedback(exp_rpm, real_rpm);
 	  }
+
+	  HT16K33_DisplayInteger(input_pot);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
