@@ -118,7 +118,7 @@ int main(void)
   int prior_state = 1;
   static int last_update = 0; // Static to preserve value
   //float duty_scale = 1.0;
-  int prior_hall = 2; // This variable ensures each peak/valley is only counted once
+  int prior_hall = 0; // This variable ensures each peak/valley is only counted once
   //int exp_rpm;
 
   // Infinite loop for execution
@@ -148,20 +148,20 @@ int main(void)
 
 	  // Obtain and interpret hall effect sensor input
 	  input_hall = hall_input();
-      if (input_hall > 1825 && prior_hall != 1){
+      if (input_hall > 2430 && prior_hall == 0){
     	  pulse_num++;
     	  prior_hall = 1;
-      }else if (input_hall < 450 && prior_hall != 0){
+      }else if (input_hall == 0 && prior_hall == 1){
     	  pulse_num++;
     	  prior_hall = 0;
       }
 
-      // Every 2 seconds, enter this sequence to calculate RPM/apply feedback
+      // Every 3 seconds, enter this sequence to calculate RPM/apply feedback
 	  if(rpm_flag == 1){
 		  rpm_flag = 0;
 		  real_rpm = hall_rpm(pulse_num);
 		  pulse_num = 0;
-		  HT16K33_DisplayInteger((real_rpm / 4.5)); // Display measured RPM
+		  HT16K33_DisplayInteger(real_rpm); // Display measured RPM
 		  exp_rpm = input_to_rpm(input_pot);
 		  feedback = closed_loop_feedback(exp_rpm, real_rpm);
 	  }
@@ -414,7 +414,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 1999;
+  htim2.Init.Prescaler = 2999;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 71999;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;

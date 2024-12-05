@@ -3,8 +3,11 @@
 // https://deepbluembedded.com/stm32-adc-read-example-dma-interrupt-polling/
 #include "main.h"
 
-#define MIN_INPUT 200 // Lowest input that the motor spins at
-#define MAX_INPUT 240 // Maximum input to stay in spec
+//#define MIN_INPUT 200 // Lowest input that the motor spins at (31V)
+//#define MAX_INPUT 240 // Maximum input to stay in spec (31V)
+
+#define MIN_INPUT 180 // Lowest input that the motor spins at (36V)
+#define MAX_INPUT 219 // Maximum input to stay in spec (36V)
 
 // Function prototypes
 int user_input();
@@ -55,9 +58,9 @@ int update_input(int input, int prior_val, int feedback){
 // Function to perform linear interpolation on input to find RPM (see 10/17 notes)
 int input_to_rpm(int u_input){
 	// Constants to hold min/max motor RPM (from spec) and inputs
-	const int gear_ratio = 4.5;
-	const int min_rpm = 50 * gear_ratio;
-	const int max_rpm = 200 * gear_ratio;
+	//const int gear_ratio = 4.5;
+	const int min_rpm = 58;
+	const int max_rpm = 200;
 	const int min_input = MIN_INPUT;
 	const int max_input = MAX_INPUT;
 	int expected_rpm = 0;

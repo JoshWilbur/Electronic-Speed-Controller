@@ -25,8 +25,10 @@ int hall_input(void){
 
 // This function calculates RPM based on the hall effect readings
 int hall_rpm(int p_num){
-	int magnet_num = 8.0;
-	int rpm = (p_num / (magnet_num/2.0)) * 30.0;
+	const float magnet_num = 8.0;
+	const float gear_ratio = 4.5;
+	float precise_rpm = (p_num / ((magnet_num) * gear_ratio)) * 20.0;
+	int rpm = (int)precise_rpm;
 	return rpm;
 }
 
@@ -38,9 +40,9 @@ int closed_loop_feedback(int exp_rpm, int act_rpm){
 	static float integral = 0.00;
 	static int last_error = 0;
 
-	float Kp = 0.01; // Prop. gain constant, higher value = harder correction
-	float Ki = 0.003; // Integral Gain
-	float Kd = 0.012; // Derivative Gain
+	float Kp = 0.05; // Prop. gain constant, higher value = harder correction
+	float Ki = 0.012; // Integral Gain
+	float Kd = 0.025; // Derivative Gain
 
 	signed int error = exp_rpm - act_rpm;
 	float scaled_error = Kp * error;
@@ -68,7 +70,7 @@ int closed_loop_feedback(int exp_rpm, int act_rpm){
 	return scale;
 }
 
-// TIM2 callback, triggers every 2 seconds
+// TIM2 callback, triggers every 3 seconds
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	if(htim->Instance == TIM2){ // Confirm htim2 is the interrupt clock
 		rpm_flag = 1; // Set flag to calculate RPM
