@@ -1,9 +1,14 @@
-/*#include "stm32l4xx_hal.h"
-
-#ifndef INC_7_SEGMENT_DISPLAY_H_
-#define INC_7_SEGMENT_DISPLAY_H_
+// This file contains code, authored by Amir, to drive the HT16K33 display
+#include "main.h"
 
 #define HT16K33_ADDRESS 0x70 << 1 // Shift left for HAL I2C
+
+// Function prototypes
+void HT16K33_Init();
+void HT16K33_DisplayInteger(int number);
+
+
+// Array for 7 segment digits
 uint8_t digitToSegment[] = {
     0x3F, // 0
     0x06, // 1
@@ -17,7 +22,7 @@ uint8_t digitToSegment[] = {
     0x6F  // 9
 };
 
-void HT16K33_Init(void) {
+void HT16K33_Init() {
     uint8_t command;
 
     // Turn on the oscillator
@@ -32,6 +37,9 @@ void HT16K33_Init(void) {
     command = 0x81; // Display on, no blinking
     HAL_I2C_Master_Transmit(&hi2c1, HT16K33_ADDRESS, &command, 1, HAL_MAX_DELAY);
 }
+
+
+
 
 // Function to display an integer (max 4 digits)
 void HT16K33_DisplayInteger(int number) {
@@ -71,5 +79,3 @@ void HT16K33_DisplayInteger(int number) {
     // Send the updated buffer to the HT16K33
     HAL_I2C_Mem_Write(&hi2c1, HT16K33_ADDRESS, 0x00, I2C_MEMADD_SIZE_8BIT, displayBuffer, 10, HAL_MAX_DELAY);
 }
-
-#endif /* 7_SEGMENT_DISPLAY_H_ */
