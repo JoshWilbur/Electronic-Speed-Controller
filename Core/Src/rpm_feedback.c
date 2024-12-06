@@ -27,33 +27,33 @@ int hall_input(void){
 int hall_rpm(int p_num){
 	const float magnet_num = 8.0;
 	const float gear_ratio = 4.5;
-	float precise_rpm = (p_num / ((magnet_num) * gear_ratio)) * 20.0;
+	float precise_rpm = (p_num / ((magnet_num) * gear_ratio)) * 240.0;
 	int rpm = (int)precise_rpm;
 	return rpm;
 }
 
 // This function operates the closed loop RPM feedback system
 int closed_loop_feedback(int exp_rpm, int act_rpm){
-	if(exp_rpm == 0 || act_rpm == 0) return 0; // Accounting for base case
+	if(exp_rpm == 0) return 0; // Accounting for base case
 
 	// variables to keep integral and last error states, static to persist
 	static float integral = 0.00;
 	static int last_error = 0;
 
-	float Kp = 0.05; // Prop. gain constant, higher value = harder correction
-	float Ki = 0.012; // Integral Gain
-	float Kd = 0.025; // Derivative Gain
+	float Kp = 0.2; // Prop. gain constant, higher value = harder correction
+	float Ki = 0.05; // Integral Gain
+	float Kd = 0.045; // Derivative Gain
 
-	signed int error = exp_rpm - act_rpm;
+	float error = exp_rpm - act_rpm;
 	float scaled_error = Kp * error;
 
 
 	// Conditional to prevent integral windup
 	// Good article on that here: https://control.com/technical-articles/intergral-windup-method-in-pid-control/
-	if(integral > 100){
-		integral = 100;
-	}else if(integral < -100){
-		integral = -100;
+	if(integral > 400){
+		integral = 400;
+	}else if(integral < -400){
+		integral = -400;
 	}
 	integral += error;
 	float integral_term = Ki * integral;
@@ -64,9 +64,9 @@ int closed_loop_feedback(int exp_rpm, int act_rpm){
 	last_error = error;
 
 	// Output scale to adjust PWM input to H-Bridge
-	int scale = scaled_error + integral_term + derivative_term;
-	if(scale > 120) return 120;
-	if(scale < -120) return -120;
+	int scale = (int)(scaled_error + integral_term + derivative_term);
+	if(scale > 160) return 160;
+	if(scale < -160) return -160;
 	return scale;
 }
 
