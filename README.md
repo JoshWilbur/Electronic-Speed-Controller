@@ -8,9 +8,5 @@ Image of prototype to test STM32 output (7/19/24)
 ![image](https://github.com/user-attachments/assets/b47a6323-f5db-4954-950a-a9ec15e21c73)
 
 
-# Software TODO (due date)
-* Implement 7 seg display (12/8)
-* Clean up comments and code (by 12/8)
-* Get rid of most global variables once testing is done (by 12/8)
-* Upload PCB files (by 12/15)
-* Flesh out README with pictures of PCB, prototype, schematic... (after semester)
+# Software TODO:
+* Flesh out README with pictures of PCB, prototype, schematic

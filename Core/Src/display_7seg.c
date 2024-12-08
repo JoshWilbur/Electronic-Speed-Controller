@@ -22,6 +22,7 @@ uint8_t digitToSegment[] = {
     0x6F  // 9
 };
 
+// Initialize the I2C display
 void HT16K33_Init() {
     uint8_t command;
 

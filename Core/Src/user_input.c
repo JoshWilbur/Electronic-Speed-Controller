@@ -11,7 +11,6 @@ int user_input();
 int update_input(int current_val, int prior_val, int feedback);
 int input_to_rpm(int u_input);
 
-
 volatile int dir_flag = -1; // Start in OFF state by default
 
 // This function takes an input from the potentiometer connected to ADC1_CH5 (PA0)
@@ -29,6 +28,7 @@ int user_input(){
 	return scaled_pot;
 }
 
+// Function to update the input gradually
 int update_input(int input, int prior_val, int feedback){
 	input += feedback;
 
@@ -56,14 +56,11 @@ int input_to_rpm(int u_input){
 	// Constants to hold min/max motor RPM (from spec) and inputs
 	const int min_rpm = 60;
 	const int max_rpm = 200;
-	const int min_input = MIN_INPUT;
-	const int max_input = MAX_INPUT;
-	int expected_rpm = 0;
 
-	if(u_input < min_input) return 0;
+	if(u_input < MIN_INPUT) return 0;
 
 	// Translate input to RPM
-	expected_rpm = min_rpm + ((float)(u_input - min_input) / (max_input - min_input)) * (max_rpm - min_rpm);
+	int expected_rpm = min_rpm + ((float)(u_input - MIN_INPUT) / (MAX_INPUT - MIN_INPUT)) * (max_rpm - min_rpm);
 	return expected_rpm;
 }
 

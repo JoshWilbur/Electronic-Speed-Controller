@@ -14,11 +14,6 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-ADC_HandleTypeDef hadc1;
-ADC_HandleTypeDef hadc2;
-
-TIM_HandleTypeDef htim2;
-TIM_HandleTypeDef htim3;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -32,9 +27,7 @@ TIM_HandleTypeDef htim3;
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 ADC_HandleTypeDef hadc2;
-
 I2C_HandleTypeDef hi2c1;
-
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 
@@ -54,15 +47,6 @@ static void MX_I2C1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-// TODO: make local when debugging is done
-int input_hall = 0;
-int pulse_num = 0;
-int input_pot = 0;
-int feedback_pot = 0;
-int exp_rpm;
-int real_rpm = 0;
-int feedback = 0;
-
 /* USER CODE END 0 */
 
 /**
@@ -104,22 +88,23 @@ int main(void)
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
   HT16K33_Init(); // Initialize 7 segment display
+  PWM_frequency(25000); // Set PWM frequency
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  // Set PWM frequency
-  PWM_frequency(25000);
-
-  // Ints to hold input values and state
-  //int input_pot = 0;
-  //int input_hall = 0;
+  // Variables to hold input values and state
   int prior_state = 1;
   static int last_update = 0; // Static to preserve value
-  //float duty_scale = 1.0;
   int prior_hall = 0; // This variable ensures each peak/valley is only counted once
-  //int exp_rpm;
+  int input_hall = 0;
+  int pulse_num = 0;
+  int input_pot = 0;
+  int feedback_pot = 0;
+  int exp_rpm = 0;
+  int real_rpm = 0;
+  int feedback = 0;
 
   // Infinite loop for execution
   while(1)
@@ -156,12 +141,12 @@ int main(void)
     	  prior_hall = 0;
       }
 
-      // Every 3 seconds, enter this sequence to calculate RPM/apply feedback
+      // Every 0.25 seconds, enter this sequence to calculate RPM/apply feedback
 	  if(rpm_flag == 1){
 		  rpm_flag = 0;
 		  real_rpm = hall_rpm(pulse_num);
 		  pulse_num = 0;
-		  HT16K33_DisplayInteger(real_rpm); // Display measured RPM
+		  HT16K33_DisplayInteger(real_rpm); // Display measured RPM on 7 segment
 		  exp_rpm = input_to_rpm(input_pot);
 		  feedback = closed_loop_feedback(exp_rpm, real_rpm);
 	  }

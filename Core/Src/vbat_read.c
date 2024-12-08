@@ -1,11 +1,8 @@
-/*
- * vbat_read.c
- *
- *  Created on: Nov 11, 2024
- *      Author: amirs
- */
+// Authored by Amir
+/* --------------------NOTE--------------------
+	This code hasn't been implemented into the main function. This is due to time constraints and the minor role it would play
 
-
+   --------------------------------------------*/
 #include "adc_reader.h"
 #include "main.h"
 
@@ -30,14 +27,13 @@ float Scale_ADC_to_Voltage(uint32_t adc_value) {
     return battery_voltage;  // Apply additional scaling if needed
 }
 // Using pin PC0
-
-/*Configure GPIO pin : B1_Pin */
-/*GPIO_InitStruct.Pin = B1_Pin;
+/*
+GPIO_InitStruct.Pin = B1_Pin;
 GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
 GPIO_InitStruct.Pull = GPIO_NOPULL;
 HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-/*Configure GPIO pin : LD2_Pin
+Configure GPIO pin : LD2_Pin
 GPIO_InitStruct.Pin = LD2_Pin;
 GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -48,11 +44,8 @@ HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
 
 
 ///////////Main code////////////////
- *   while (1)
+   while (1)
   {
-    /* USER CODE END WHILE
-
-    /* USER CODE BEGIN 3
 	  adc_value = Read_ADC_Value();          // Read ADC
 	  v_bat = Scale_ADC_to_Voltage(adc_value);  // Convert to voltage
 	  HAL_Delay(100);  // Delay between reads

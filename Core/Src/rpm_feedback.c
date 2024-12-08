@@ -1,7 +1,6 @@
 // This file contains code to operate the feedback loop
 // This link, along with ECE 271+314 notes, was referenced:
 // https://deepbluembedded.com/stm32-external-interrupt-example-lab/
-
 #include "main.h"
 
 // Function prototypes
@@ -44,12 +43,11 @@ int closed_loop_feedback(int exp_rpm, int act_rpm){
 	float Ki = 0.05; // Integral Gain
 	float Kd = 0.045; // Derivative Gain
 
+	// Calculate error terms
 	float error = exp_rpm - act_rpm;
 	float scaled_error = Kp * error;
 
-
-	// Conditional to prevent integral windup
-	// Good article on that here: https://control.com/technical-articles/intergral-windup-method-in-pid-control/
+	// Conditional to prevent integral wind-up
 	if(integral > 400){
 		integral = 400;
 	}else if(integral < -400){
@@ -70,7 +68,7 @@ int closed_loop_feedback(int exp_rpm, int act_rpm){
 	return scale;
 }
 
-// TIM2 callback, triggers every 3 seconds
+// TIM2 callback, triggers every 0.25 seconds
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	if(htim->Instance == TIM2){ // Confirm htim2 is the interrupt clock
 		rpm_flag = 1; // Set flag to calculate RPM

@@ -1,0 +1,23 @@
+G04 #@! TF.GenerationSoftware,KiCad,Pcbnew,8.0.6*
+G04 #@! TF.CreationDate,2024-11-01T15:42:23-04:00*
+G04 #@! TF.ProjectId,H_Bridge_KiCAD,485f4272-6964-4676-955f-4b694341442e,rev?*
+G04 #@! TF.SameCoordinates,Original*
+G04 #@! TF.FileFunction,Profile,NP*
+%FSLAX46Y46*%
+G04 Gerber Fmt 4.6, Leading zero omitted, Abs format (unit mm)*
+G04 Created by KiCad (PCBNEW 8.0.6) date 2024-11-01 15:42:23*
+%MOMM*%
+%LPD*%
+G01*
+G04 APERTURE LIST*
+G04 #@! TA.AperFunction,Profile*
+%ADD10C,0.200000*%
+G04 #@! TD*
+G04 APERTURE END LIST*
+D10*
+X67000000Y-58000000D02*
+X226500000Y-58000000D01*
+X226500000Y-120516000D01*
+X67000000Y-120516000D01*
+X67000000Y-58000000D01*
+M02*
