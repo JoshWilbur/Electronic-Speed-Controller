@@ -16,7 +16,7 @@ volatile int rpm_flag = 0;
 int hall_input(void){
 	int adc_hall = 0;
 	HAL_ADC_Start(&hadc2); // Begin ADC conversion
- 	HAL_ADC_PollForConversion(&hadc2, 100);
+ 	HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY);
  	adc_hall = HAL_ADC_GetValue(&hadc2); // Obtain raw ADC output
 	HAL_ADC_Stop(&hadc2); // End ADC conversion
 	return adc_hall; // Return raw hall effect sensor value
