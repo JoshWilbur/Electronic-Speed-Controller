@@ -39,8 +39,8 @@ int closed_loop_feedback(int exp_rpm, int act_rpm){
 	static float integral = 0.00;
 	static int last_error = 0;
 
-	float Kp = 0.2; // Prop. gain constant, higher value = harder correction
-	float Ki = 0.05; // Integral Gain
+	float Kp = 0.27; // Prop. gain constant, higher value = harder correction
+	float Ki = 0.07; // Integral Gain
 	float Kd = 0.045; // Derivative Gain
 
 	// Calculate error terms

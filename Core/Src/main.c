@@ -94,16 +94,16 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  // Variables to hold input values and state
-  int prior_state = 1;
-  static int last_update = 0; // Static to preserve value
-  int prior_hall = 0; // This variable ensures each peak/valley is only counted once
-  int input_hall = 0;
+  // Variables to hold input values and state'
+  static int last_update = 0;
+  int prior_state = 1; // Prior state of the H-Bridge
+  int prior_hall = 0;
+  int input_hall = 0; // ADC input value from the hall effect sensor
   int pulse_num = 0;
   int input_pot = 0;
-  int feedback_pot = 0;
-  int exp_rpm = 0;
-  int real_rpm = 0;
+  int feedback_pot = 0; // Input value scaled by feedback
+  int exp_rpm = 0; // "Expected" RPM of the motor based on the input value
+  int real_rpm = 0; // Calculated RPM of the motor
   int feedback = 0;
 
   // Infinite loop for execution
@@ -133,10 +133,10 @@ int main(void)
 
 	  // Obtain and interpret hall effect sensor input
 	  input_hall = hall_input();
-      if (input_hall > 2430 && prior_hall == 0){
+      if (input_hall > 2400 && prior_hall == 0){
     	  pulse_num++;
     	  prior_hall = 1;
-      }else if (input_hall == 0 && prior_hall == 1){
+      }else if (input_hall < 50 && prior_hall == 1){
     	  pulse_num++;
     	  prior_hall = 0;
       }
