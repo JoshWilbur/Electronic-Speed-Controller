@@ -27,7 +27,9 @@
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 ADC_HandleTypeDef hadc2;
+
 I2C_HandleTypeDef hi2c1;
+
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 
@@ -47,6 +49,16 @@ static void MX_I2C1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static int last_update = 0;
+int prior_state = -1; // Prior state of the H-Bridge
+int prior_hall = 0;
+int input_hall = 0; // ADC input value from the hall effect sensor
+int pulse_num = 0;
+int input_pot = 0;
+int feedback_pot = 0; // Input value scaled by feedback
+int exp_rpm = 0; // "Expected" RPM of the motor based on the input value
+int real_rpm = 0; // Calculated RPM of the motor
+int feedback = 0;
 /* USER CODE END 0 */
 
 /**
@@ -95,16 +107,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   // Variables to hold input values and state'
-  static int last_update = 0;
-  int prior_state = 1; // Prior state of the H-Bridge
-  int prior_hall = 0;
-  int input_hall = 0; // ADC input value from the hall effect sensor
-  int pulse_num = 0;
-  int input_pot = 0;
-  int feedback_pot = 0; // Input value scaled by feedback
-  int exp_rpm = 0; // "Expected" RPM of the motor based on the input value
-  int real_rpm = 0; // Calculated RPM of the motor
-  int feedback = 0;
+
 
   // Infinite loop for execution
   while(1)
