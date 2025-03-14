@@ -15,13 +15,13 @@ void hbridge_state(int input, int d_flag){
 		TIM3->CCR2 = 0;
 		TIM3->CCR3 = 0;
 		TIM3->CCR4 = 0;
-	}else if(d_flag == 0 && input < 380){
+	}else if(d_flag == 0 && input < 380 && input >= 0){
 		// Backward motion, Q1/Q4 on
 		TIM3->CCR1 = input;
 		TIM3->CCR2 = 0;
 		TIM3->CCR3 = 0;
 		TIM3->CCR4 = input;
-	}else if(d_flag == 1 && input < 380){
+	}else if(d_flag == 1 && input < 380 && input >= 0){
 		// Forward motion, Q2/Q3 on
 		TIM3->CCR1 = 0;
 		TIM3->CCR2 = input;
@@ -30,7 +30,7 @@ void hbridge_state(int input, int d_flag){
 	}
 }
 
-// This function can modify the TIM3 PWM frequency (effective range: 100Hz to 30kHz) with ease
+// This function can modify the TIM3 PWM frequency with ease
 // See 9/16/24 notebook entry for more details
 void PWM_frequency(int freq){
 	if(freq >= 100 && freq <= 30000){
