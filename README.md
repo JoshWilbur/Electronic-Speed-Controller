@@ -2,16 +2,18 @@
 
 Developers: Amir Seidakhmetov and Joshua Wilbur
 
-This repository contains firmware to drive a 36V Electronic Speed Controller (ESC) for a DC motor. This project has been tested to handle a 3A load without issue. Motor speed is monitored and controlled using a hall effect sensor and PID feedback. 
+This repository contains firmware to drive a 36V Electronic Speed Controller (ESC) for a DC motor. This project has been tested to handle a 3A load without issue. Motor speed is monitored and controlled using a hall effect sensor and PID feedback.
 
 Driver code for the H-Bridge circuit is found in /Core/Src. The files main.c,
 H_bridge.c, user_input.c and rpm_feedback.c contain custom code developed
 for this project.
 
-Images of the schematic are found below, along with an operation guide.
+Images of the project are found below, along with an operation guide.
 
-![H-Bridge Schematic](Schematics/H_Bridge_SchematicV7.pdf) \
-![STM32 Schematic](Schematics/STM32_Control_SchematicV3.pdf)
+![Prototype December 2024](Documentation/ESC_prototype_mounted.jpg)
+
+**Load Testing**
+![Load Test](Documentation/load_test.jpg)
 
 # Operation Guide
 
